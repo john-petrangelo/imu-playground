@@ -44,13 +44,13 @@ vector readMag()
 float getMagHeading()
 {
   float heading;
-  if (magAdj.y == 0) {
-    heading = (magAdj.x < 0) ? PI : 0;
+  if (magAdj.y == 0.0) {
+    heading = (magAdj.x < 0.0) ? 180.0 : 0.0;
   } else {
-    heading = atan2(-magAdj.x, magAdj.y);
+    heading = rad2deg(atan2(-magAdj.x, magAdj.y));
   }
 
-  heading -= DECLINATION * PI / 180;
+  heading = normalizeDeg(heading - DECLINATION);
 
   // Limit range of heading, 0 <= heading < 2*PI.
   if (heading < 0) {

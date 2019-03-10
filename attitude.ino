@@ -25,18 +25,17 @@ void initAttitude()
 
 void updateAttitude()
 {
-  long dt = millis() - lastUpdateTime;
+  long now = millis();
   vector const gyro = getGyro();
 
-  long dz = gyro.z;
-  
-  heading += dz * dt / 1000.0;
-  
-  vector const accel = getAccel();
-  pitch = atan2(accel.y, accel.z);
-  roll = atan2(accel.x, accel.z);
+  // Calculate delta time in seconds.
+  float dt = (now - lastUpdateTime) * 0.001;
 
-  lastUpdateTime += dt;
+  heading = normalizeDeg(heading - gyro.z * dt);
+  pitch   = normalizeDeg(pitch   - gyro.x * dt);
+  roll    = normalizeDeg(roll    + gyro.y * dt);
+  
+  lastUpdateTime = now;
 }
 
 void printAttitude()

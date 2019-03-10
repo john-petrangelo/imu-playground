@@ -13,3 +13,18 @@ float rad2deg(float rad) {
 float deg2rad(float deg) {
     return deg * PI / 180.0;
 }
+
+// Normalize the degrees to -180..180.
+float normalizeDeg(float in) {
+  float out = fmod(in, 360.0);
+  
+  if (out < 180.0) {
+    out += 360.0;
+  }
+
+  if (out > 180.0) {
+    out -= 360.0;
+  }
+
+  return out;
+}
