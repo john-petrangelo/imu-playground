@@ -59,12 +59,7 @@ void setup()
   // and turns it on.
   if (!imu.begin())
   {
-    Serial.println("Failed to communicate with LSM9DS1.");
-    Serial.println("Double-check wiring.");
-    Serial.println("Default settings in this sketch will " \
-                  "work for an out of the box LSM9DS1 " \
-                  "Breakout, but may need to be modified " \
-                  "if the board jumpers are.");
+    Serial.println("Failed to communicate with LSM9DS1 IMU.");
     while (1)
       ;
   }
@@ -99,35 +94,30 @@ void loop()
   
   if ((lastPrint + PRINT_SPEED) < millis())
   {
-//    printGyro();  // Print "G: gx, gy, gz"
+//    printGyro();
 //    Serial.print(" ");
-//    printAccel(); // Print "A: ax, ay, az"
+//    printAccel();
 //    Serial.print(" ");
-    printMag();   // Print "M: mx, my, mz"
+//    printMagRaw();
+//    printMagAdj();
+//    printMagMin();
+//    printMagMax();
     // Print the heading and orientation for fun!
     // Call print attitude. The LSM9DS1's mag x and y
     // axes are opposite to the accelerometer, so my, mx are
     // substituted for each other.
 //    Serial.print(" ");
-    float adjMx = fmap(imu.calcMag(imu.mx), MAG_MIN.x, MAG_MAX.x, -1.0, 1.0);
-    float adjMy = fmap(imu.calcMag(imu.my), MAG_MIN.y, MAG_MAX.y, -1.0, 1.0);
-    float adjMz = fmap(imu.calcMag(imu.mz), MAG_MIN.z, MAG_MAX.z, -1.0, 1.0);
+    vector mag = readMag();
 
-    vector adjMag = readMag();
-
-    printAttitude(imu.ax, imu.ay, imu.az, adjMag);
+    plotAttitude(imu.ax, imu.ay, imu.az);
+//    printMagAdj();
+//    printMagMin();
+//    printMagMax();
     Serial.println();
     
     lastPrint = millis(); // Update lastPrint time
   }
 }
-
-// Scale the value over the given range to -1..1
-float fmap(float x, float in_min, float in_max, float out_min, float out_max)
-{
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
 
 void printGyro()
 {
@@ -190,24 +180,36 @@ void printAttitude(float ax, float ay, float az, vector mag)
   float pitch = atan2(-ax, sqrt(ay * ay + az * az));
   
   float heading = getMagHeading();
-  // Convert everything from radians to degrees:
-  heading *= 180.0 / PI;
-  pitch *= 180.0 / PI;
-  roll  *= 180.0 / PI;
 
-  Serial.print("mx,my,mz: ");
-  Serial.print(mag.x);
-  Serial.print(", ");
-  Serial.print(mag.y);
-  Serial.print(", ");
-  Serial.print(mag.z);
-  Serial.print("  ");
+  heading = rad2deg(heading);
+  pitch = rad2deg(pitch);
+  roll = rad2deg(roll);
+
+  Serial.print("Heading:");
+  Serial.print(heading);
+
+//  Serial.print("Heading, Pitch, Roll: ");
+//  Serial.print(heading, 2);
+//  Serial.print(", ");
+//  Serial.print(pitch, 2);
+//  Serial.print(", ");
+//  Serial.print(roll, 2);
+}
+
+void plotAttitude(float ax, float ay, float az)
+{
+  float roll = atan2(ax, az);
+  float pitch = atan2(-ax, sqrt(ay * ay + az * az));
   
-  
-  Serial.print("Heading, Pitch, Roll: ");
-  Serial.print(heading, 2);
-  Serial.print(", ");
-  Serial.print(pitch, 2);
-  Serial.print(", ");
-  Serial.print(roll, 2);
+  float heading = getMagHeading();
+
+  heading = rad2deg(heading);
+  pitch = rad2deg(pitch);
+  roll = rad2deg(roll);
+
+  Serial.print(heading);
+  Serial.print(" ");
+  Serial.print(pitch);
+  Serial.print(" ");
+  Serial.print(roll);
 }
