@@ -41,7 +41,7 @@ struct vector {
 ////////////////////////////
 #define PRINT_CALCULATED
 //#define PRINT_RAW
-#define PRINT_SPEED 250 // ms between prints
+#define PRINT_SPEED 1 // ms between prints
 static unsigned long lastPrint = 0; // Keep track of print time
 
 void setup() 
@@ -77,13 +77,13 @@ void loop()
 //    // gx, gy, and gz variables with the most current data.
 //    imu.readGyro();
 //  }
-//  if ( imu.accelAvailable() )
-//  {
-//    // To read from the accelerometer, first call the
-//    // readAccel() function. When it exits, it'll update the
-//    // ax, ay, and az variables with the most current data.
-//    imu.readAccel();
-//  }
+  if ( imu.accelAvailable() )
+  {
+    // To read from the accelerometer, first call the
+    // readAccel() function. When it exits, it'll update the
+    // ax, ay, and az variables with the most current data.
+    imu.readAccel();
+  }
   if ( imu.magAvailable() )
   {
     // To read from the magnetometer, first call the
@@ -96,7 +96,8 @@ void loop()
   {
 //    printGyro();
 //    Serial.print(" ");
-//    printAccel();
+    readAccel();
+//    plotAccel();
 //    Serial.print(" ");
 //    printMagRaw();
 //    printMagAdj();
@@ -107,7 +108,7 @@ void loop()
     // axes are opposite to the accelerometer, so my, mx are
     // substituted for each other.
 //    Serial.print(" ");
-    vector mag = readMag();
+    readMag();
 
     plotAttitude(imu.ax, imu.ay, imu.az);
 //    printMagAdj();
@@ -143,31 +144,6 @@ void printGyro()
 #endif
 }
 
-void printAccel()
-{  
-  // Now we can use the ax, ay, and az variables as we please.
-  // Either print them as raw ADC values, or calculated in g's.
-  Serial.print("A: ");
-#ifdef PRINT_CALCULATED
-  // If you want to print calculated values, you can use the
-  // calcAccel helper function to convert a raw ADC value to
-  // g's. Give the function the value that you want to convert.
-  Serial.print(imu.calcAccel(imu.ax), 2);
-  Serial.print(", ");
-  Serial.print(imu.calcAccel(imu.ay), 2);
-  Serial.print(", ");
-  Serial.print(imu.calcAccel(imu.az), 2);
-  Serial.print(" g");
-#elif defined PRINT_RAW 
-  Serial.print(imu.ax);
-  Serial.print(", ");
-  Serial.print(imu.ay);
-  Serial.print(", ");
-  Serial.print(imu.az);
-#endif
-
-}
-
 // Calculate pitch, roll, and heading.
 // Pitch/roll calculations take from this app note:
 // http://cache.freescale.com/files/sensors/doc/app_note/AN3461.pdf?fpsp=1
@@ -199,7 +175,7 @@ void printAttitude(float ax, float ay, float az, vector mag)
 void plotAttitude(float ax, float ay, float az)
 {
   float roll = atan2(ax, az);
-  float pitch = atan2(-ax, sqrt(ay * ay + az * az));
+  float pitch = atan2(ay, az);
   
   float heading = getMagHeading();
 
