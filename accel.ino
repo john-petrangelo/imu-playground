@@ -1,10 +1,15 @@
-vector accelRaw = {0};
+static vector accelRaw = {0};
 
 void readAccel()
 {
   accelRaw.x = imu.calcAccel(imu.ax);
   accelRaw.y = imu.calcAccel(imu.ay);
   accelRaw.z = imu.calcAccel(imu.az);
+}
+
+vector getAccel()
+{
+  return accelRaw;
 }
 
 void plotAccel()

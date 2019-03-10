@@ -39,10 +39,10 @@ struct vector {
 ////////////////////////////
 // Sketch Output Settings //
 ////////////////////////////
-#define PRINT_CALCULATED
-//#define PRINT_RAW
-#define PRINT_SPEED 250 // ms between prints
-static unsigned long lastPrint = 0; // Keep track of print time
+#define PRINT_SPEED 100 // ms between prints
+#define UPDATE_SPEED 5 // ms between updates
+static unsigned long lastPrint = 0;
+static unsigned long lastUpdate = 0;
 
 static int accelCount = 0;
 static int gyroCount = 0;
@@ -71,9 +71,65 @@ void setup()
 
 void loop()
 {
-  unsigned long now = millis();
-  
-  // Update the sensor values whenever new data is available
+  unsigned long const now = millis();
+  readSensors();
+
+  if (now < 1000) {
+    // For the first second use mag and accel.
+    if ((lastPrint + PRINT_SPEED) < now)
+    {
+      initAttitude();
+      printUpdate();
+      lastPrint = now;
+      resetCounts();
+    }
+  } else {
+    // After one second use the gyro.
+    if ((lastUpdate + UPDATE_SPEED) < now)
+    {
+      updateAttitude();
+      lastUpdate = now;
+    }
+
+    if ((lastPrint + PRINT_SPEED) < now)
+    {
+      printUpdate();
+      lastPrint = now;
+      resetCounts();
+    }
+  }
+}
+
+void printUpdate()
+{
+    readAccel();
+    readGyro();
+    readMag();
+
+//    printGyro();
+//    Serial.print(" ");
+//    plotAccel();
+//    Serial.print(" ");
+//    printMagRaw();
+//    printMagAdj();
+//    printMagMin();
+//    printMagMax();
+//    Serial.print(" ");
+
+//    updateAttitude();
+    plotAttitude();
+
+//    printMagAdj();
+//    printMagMin();
+//    printMagMax();
+//    printCounts();
+
+    Serial.println();  
+}
+
+void readSensors()
+{
+    // Update the sensor values whenever new data is available
   if ( imu.gyroAvailable() )
   {
     // To read from the gyroscope,  first call the
@@ -98,36 +154,6 @@ void loop()
     imu.readMag();
     magCount++;
   }
-  
-  if ((lastPrint + PRINT_SPEED) < millis())
-  {
-//    printGyro();
-//    Serial.print(" ");
-    readAccel();
-//    plotAccel();
-//    Serial.print(" ");
-//    printMagRaw();
-//    printMagAdj();
-//    printMagMin();
-//    printMagMax();
-    // Print the heading and orientation for fun!
-    // Call print attitude. The LSM9DS1's mag x and y
-    // axes are opposite to the accelerometer, so my, mx are
-    // substituted for each other.
-//    Serial.print(" ");
-    readMag();
-
-    plotAttitude(imu.ax, imu.ay, imu.az);
-//    printMagAdj();
-//    printMagMin();
-//    printMagMax();
-    printCounts();
-    resetCounts();
-
-    Serial.println();
-    
-    lastPrint = millis(); // Update lastPrint time
-  }
 }
 
 void printCounts()
@@ -146,74 +172,4 @@ void resetCounts()
   accelCount = 0;
   gyroCount = 0;
   magCount = 0;
-}
-
-void printGyro()
-{
-  // Now we can use the gx, gy, and gz variables as we please.
-  // Either print them as raw ADC values, or calculated in DPS.
-  Serial.print("G: ");
-#ifdef PRINT_CALCULATED
-  // If you want to print calculated values, you can use the
-  // calcGyro helper function to convert a raw ADC value to
-  // DPS. Give the function the value that you want to convert.
-  Serial.print(imu.calcGyro(imu.gx), 2);
-  Serial.print(", ");
-  Serial.print(imu.calcGyro(imu.gy), 2);
-  Serial.print(", ");
-  Serial.print(imu.calcGyro(imu.gz), 2);
-  Serial.print(" deg/s");
-#elif defined PRINT_RAW
-  Serial.print(imu.gx);
-  Serial.print(", ");
-  Serial.print(imu.gy);
-  Serial.print(", ");
-  Serial.print(imu.gz);
-#endif
-}
-
-// Calculate pitch, roll, and heading.
-// Pitch/roll calculations take from this app note:
-// http://cache.freescale.com/files/sensors/doc/app_note/AN3461.pdf?fpsp=1
-// Heading calculations taken from this app note:
-// http://www51.honeywell.com/aero/common/documents/myaerospacecatalog-documents/Defense_Brochures-documents/Magnetic__Literature_Application_notes-documents/AN203_Compass_Heading_Using_Magnetometers.pdf
-void printAttitude(float ax, float ay, float az, vector mag)
-{
-//JHP  float roll = atan2(ay, az);
-  float roll = atan2(ax, az);
-  float pitch = atan2(-ax, sqrt(ay * ay + az * az));
-  
-  float heading = getMagHeading();
-
-  heading = rad2deg(heading);
-  pitch = rad2deg(pitch);
-  roll = rad2deg(roll);
-
-  Serial.print("Heading:");
-  Serial.print(heading);
-
-//  Serial.print("Heading, Pitch, Roll: ");
-//  Serial.print(heading, 2);
-//  Serial.print(", ");
-//  Serial.print(pitch, 2);
-//  Serial.print(", ");
-//  Serial.print(roll, 2);
-}
-
-void plotAttitude(float ax, float ay, float az)
-{
-  float roll = atan2(ax, az);
-  float pitch = atan2(ay, az);
-  
-  float heading = getMagHeading();
-
-  heading = rad2deg(heading);
-  pitch = rad2deg(pitch);
-  roll = rad2deg(roll);
-
-  Serial.print(heading);
-  Serial.print(" ");
-  Serial.print(pitch);
-  Serial.print(" ");
-  Serial.print(roll);
 }
