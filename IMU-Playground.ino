@@ -41,10 +41,14 @@ struct vector {
 ////////////////////////////
 #define PRINT_CALCULATED
 //#define PRINT_RAW
-#define PRINT_SPEED 1 // ms between prints
+#define PRINT_SPEED 250 // ms between prints
 static unsigned long lastPrint = 0; // Keep track of print time
 
-void setup() 
+static int accelCount = 0;
+static int gyroCount = 0;
+static int magCount = 0;
+
+void setup()
 {
   Serial.begin(115200);
 
@@ -69,20 +73,22 @@ void loop()
 {
   unsigned long now = millis();
   
-//  // Update the sensor values whenever new data is available
-//  if ( imu.gyroAvailable() )
-//  {
-//    // To read from the gyroscope,  first call the
-//    // readGyro() function. When it exits, it'll update the
-//    // gx, gy, and gz variables with the most current data.
-//    imu.readGyro();
-//  }
+  // Update the sensor values whenever new data is available
+  if ( imu.gyroAvailable() )
+  {
+    // To read from the gyroscope,  first call the
+    // readGyro() function. When it exits, it'll update the
+    // gx, gy, and gz variables with the most current data.
+    imu.readGyro();
+    gyroCount++;
+  }
   if ( imu.accelAvailable() )
   {
     // To read from the accelerometer, first call the
     // readAccel() function. When it exits, it'll update the
     // ax, ay, and az variables with the most current data.
     imu.readAccel();
+    accelCount++;
   }
   if ( imu.magAvailable() )
   {
@@ -90,6 +96,7 @@ void loop()
     // readMag() function. When it exits, it'll update the
     // mx, my, and mz variables with the most current data.
     imu.readMag();
+    magCount++;
   }
   
   if ((lastPrint + PRINT_SPEED) < millis())
@@ -114,10 +121,31 @@ void loop()
 //    printMagAdj();
 //    printMagMin();
 //    printMagMax();
+    printCounts();
+    resetCounts();
+
     Serial.println();
     
     lastPrint = millis(); // Update lastPrint time
   }
+}
+
+void printCounts()
+{
+  Serial.print("#accel=");
+  Serial.print(accelCount);
+  Serial.print(" #gyro=");
+  Serial.print(gyroCount);
+  Serial.print(" #mag=");
+  Serial.print(magCount);
+  Serial.print(" ");
+}
+
+void resetCounts()
+{
+  accelCount = 0;
+  gyroCount = 0;
+  magCount = 0;
 }
 
 void printGyro()
