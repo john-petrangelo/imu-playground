@@ -5,6 +5,12 @@
 // Mmin(-0.01,-0.37,-0.80), Mmax(0.53,0.31,-0.56)
 // Mmin(0.02,-0.31,-0.84) Mmax(0.51,0.28,-0.65)
 // Mmin(-0.06,-0.21,-0.87) Mmax(0.46,0.35,-0.75)
+
+// With full rotations, use the following:
+// MIN(-0.42, -0.38, -0.87) MAX(0.70, 0.72, 0.36)
+//static const vector MAG_MIN = {-0.42,-0.38,-0.87};
+//static const vector MAG_MAX = {0.70,0.72,0.36};
+
 static const vector MAG_MIN = {-0.06,-0.21,-0.87};
 static const vector MAG_MAX = {0.46,0.35,-0.75};
 
@@ -52,15 +58,6 @@ float getMagHeading()
 
   heading = normalizeDeg(heading - DECLINATION);
 
-  // Limit range of heading, 0 <= heading < 2*PI.
-  if (heading < 0) {
-    heading += 2*PI;
-  }
-
-  if (heading >= 2*PI) {
-    heading -= 2*PI;
-  }
-  
   return heading;
 }
 
@@ -102,4 +99,19 @@ void printMagMax()
   Serial.print(",");
   Serial.print(magMaxSeen.z, 2);
   Serial.print(") ");
+}
+
+void plotMagMinMax()
+{  
+  Serial.print(magMinSeen.x, 2);
+  Serial.print(" ");
+  Serial.print(magMinSeen.y, 2);
+  Serial.print(" ");
+  Serial.print(magMinSeen.z, 2);
+  Serial.print(" ");
+  Serial.print(magMaxSeen.x, 2);
+  Serial.print(" ");
+  Serial.print(magMaxSeen.y, 2);
+  Serial.print(" ");
+  Serial.print(magMaxSeen.z, 2);
 }
