@@ -119,6 +119,7 @@ void printUpdate()
 //    updateAttitude();
     plotAttitude();
 
+//    plotMagMinMax();
 //    printMagAdj();
 //    printMagMin();
 //    printMagMax();
