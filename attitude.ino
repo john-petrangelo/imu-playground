@@ -16,7 +16,6 @@ void initAttitude()
   pitch = atan2(accel.y, accel.z);
   roll = atan2(accel.x, accel.z);
 
-  heading = rad2deg(heading);
   pitch = rad2deg(pitch);
   roll = rad2deg(roll);
 
