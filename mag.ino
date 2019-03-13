@@ -8,11 +8,11 @@
 
 // With full rotations, use the following:
 // MIN(-0.42, -0.38, -0.87) MAX(0.70, 0.72, 0.36)
-//static const vector MAG_MIN = {-0.42,-0.38,-0.87};
-//static const vector MAG_MAX = {0.70,0.72,0.36};
+static const vector MAG_MIN = {-0.42,-0.38,-0.87};
+static const vector MAG_MAX = {0.70,0.72,0.36};
 
-static const vector MAG_MIN = {-0.06,-0.21,-0.87};
-static const vector MAG_MAX = {0.46,0.35,-0.75};
+//static const vector MAG_MIN = {-0.06,-0.21,-0.87};
+//static const vector MAG_MAX = {0.46,0.35,-0.75};
 
 static vector magRaw = {0};
 static vector magAdj = {0};
@@ -26,7 +26,7 @@ static vector magMaxSeen = {-999.0, -999.0, -999.0};
 // http://www.ngdc.noaa.gov/geomag-web/#declination
 #define DECLINATION 14.22 // Declination (degrees) in Shrewsbury, MA.
 
-vector readMag()
+void readMag()
 {
   magRaw.x = imu.calcMag(imu.mx);
   magRaw.y = imu.calcMag(imu.my);
@@ -43,7 +43,10 @@ vector readMag()
   magMaxSeen.x = max(magMaxSeen.x, magRaw.x);
   magMaxSeen.y = max(magMaxSeen.y, magRaw.y);
   magMaxSeen.z = max(magMaxSeen.z, magRaw.z);
+}
 
+vector getMag()
+{
   return magAdj;
 }
 

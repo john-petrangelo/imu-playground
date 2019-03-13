@@ -28,23 +28,3 @@ float normalizeDeg(float in) {
 
   return out;
 }
-
-vector v_crossproduct(vector const *a, vector const *b) {
-  vector prod;
-
-  prod.x = (a->y * b->z) - (a->z * b->y);
-  prod.y = (a->z * b->x) - (a->x * b->z);
-  prod.z = (a->x * b->y) - (a->y * b->x);
-
-  return prod;
-}
-
-float v_dotproduct(vector const *a, vector const *b)
-{
-  return (a->x * b->x) + (a->y * b->y) + (a->z * b->z);
-}
-
-float v_magnitude(vector const *v)
-{
-  return sqrt(v_dotproduct(v, v));
-}

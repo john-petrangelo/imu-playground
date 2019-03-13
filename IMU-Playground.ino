@@ -39,7 +39,7 @@ struct vector {
 ////////////////////////////
 // Sketch Output Settings //
 ////////////////////////////
-#define PRINT_SPEED 100 // ms between prints
+#define PRINT_SPEED 250 // ms between prints
 #define UPDATE_SPEED 5 // ms between updates
 static unsigned long lastPrint = 0;
 static unsigned long lastUpdate = 0;
@@ -84,28 +84,25 @@ void loop()
       resetCounts();
     }
   } else {
-    // After one second use the gyro.
-    if ((lastUpdate + UPDATE_SPEED) < now)
-    {
-      updateAttitude();
-      lastUpdate = now;
-    }
+     // After one second use the gyro.
+     if ((lastUpdate + UPDATE_SPEED) < now)
+     {
+       updateAttitude();
+       lastUpdate = now;
+     }
 
     if ((lastPrint + PRINT_SPEED) < now)
     {
-      printUpdate();
-      lastPrint = now;
-      resetCounts();
+       lastPrint = now;
+//       printUpdate();
+//       resetCounts();
+      new_test();
     }
   }
 }
 
 void printUpdate()
 {
-    readAccel();
-    readGyro();
-    readMag();
-
 //    printGyro();
 //    Serial.print(" ");
 //    plotAccel();
@@ -155,7 +152,49 @@ void readSensors()
     imu.readMag();
     magCount++;
   }
+
+  readAccel();
+  readGyro();
+  readMag();
 }
+
+void new_test()
+{
+  vector g = v_opposite(getAccel());
+  vector mag = getMag();
+
+  vector khat = v_opposite(g);
+  vector ihat = v_crossproduct(mag, khat);
+  vector jhat = v_crossproduct(khat, ihat);
+
+  v_normalize(ihat);
+  v_normalize(jhat);
+  v_normalize(khat);
+
+  float heading = normalizeDeg(rad2deg(atan2(jhat.x, jhat.y)));
+
+  vector localVector = {0.0, 1.0, 0.0};
+  float i = v_dotproduct(localVector, ihat);
+  float j = v_dotproduct(localVector, jhat);
+  float k = v_dotproduct(localVector, khat);
+  heading = normalizeDeg(rad2deg(atan2(i, j)));
+  vector euler = {i, j, k};
+
+  v_print(ihat);
+  Serial.print(" ");
+  v_print(jhat);
+  Serial.print(" ");
+  v_print(khat);
+  Serial.print(" ");
+  v_print(euler);
+  Serial.print(" H:");
+  Serial.print(heading);
+  Serial.println();
+}
+
+// sample: (0.43,-0.79,0.44) (0.90,0.38,-0.20) (-0.01,0.49,0.87)
+
+
 
 void printCounts()
 {

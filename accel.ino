@@ -23,7 +23,6 @@ void plotAccel()
   Serial.print(" ");
   Serial.print(accelRaw.z, 2);
   Serial.print(" ");
-  float magnitude = sqrt(accelRaw.x*accelRaw.x + accelRaw.y*accelRaw.y + accelRaw.z*accelRaw.z);
-  Serial.print(magnitude, 2);
+  Serial.print(v_magnitude(accelRaw), 2);
   Serial.print(" ");
 }
