@@ -22,7 +22,7 @@ void initAttitude()
   lastUpdateTime = millis();
 }
 
-void updateAttitude()
+void updateGyroAttitude()
 {
   long now = millis();
   vector const gyro = getGyro();
@@ -37,7 +37,7 @@ void updateAttitude()
   lastUpdateTime = now;
 }
 
-void printAttitude()
+void printGyroAttitude()
 {
   Serial.print("Heading:");
   Serial.print(heading);
@@ -50,7 +50,7 @@ void printAttitude()
 //  Serial.print(roll, 2);
 }
 
-void plotAttitude()
+void plotGyroAttitude()
 {
   Serial.print(heading);
   Serial.print(" ");

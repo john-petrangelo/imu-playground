@@ -2,14 +2,12 @@
 // Magnetometer base ranges. These ranges must be mapped into -1..1
 // in order for the atan2 function to calculate heading properly.
 /////////////////////////////////////////////////////////////////////
-// Mmin(-0.01,-0.37,-0.80), Mmax(0.53,0.31,-0.56)
-// Mmin(0.02,-0.31,-0.84) Mmax(0.51,0.28,-0.65)
-// Mmin(-0.06,-0.21,-0.87) Mmax(0.46,0.35,-0.75)
 
 // With full rotations, use the following:
 // MIN(-0.42, -0.38, -0.87) MAX(0.70, 0.72, 0.36)
-static const vector MAG_MIN = {-0.42,-0.38,-0.87};
-static const vector MAG_MAX = {0.70,0.72,0.36};
+// min(-0.38, -0.27, -0.71) max(0.54,0.69,0.31)
+static const vector MAG_MIN = {-0.38, -0.27, -0.71};
+static const vector MAG_MAX = {0.54,0.69,0.31};
 
 //static const vector MAG_MIN = {-0.06,-0.21,-0.87};
 //static const vector MAG_MAX = {0.46,0.35,-0.75};

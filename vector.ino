@@ -18,12 +18,14 @@ float v_magnitude(vector const &v)
   return sqrt(v_dotproduct(v, v));
 }
 
-void v_normalize(vector &v)
+vector v_normalize(vector &v)
 {
   float magnitude = v_magnitude(v);
   v.x /= magnitude;
   v.y /= magnitude;
   v.z /= magnitude;
+
+  return v;
 }
 
 vector v_opposite(vector const &v)
