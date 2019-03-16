@@ -103,15 +103,24 @@ void print_attitude()
   vector jhat = v_crossproduct(khat, ihat);
   v_normalize(jhat);
 
-  vector localVector = {0.0, 1.0, 0.0};
-  float i = v_dotproduct(localVector, ihat);
-  float j = v_dotproduct(localVector, jhat);
-  float k = v_dotproduct(localVector, khat);
 
-  vector euler = {i, j, k};
+  // The euler vector is made up of the projection (i.e. dot product)
+  // of the local vector over each of the global unit vectors (i, j, k).
+  //   vector localVector = {0.0, 1.0, 0.0};
+  //   float euler_x = v_dotproduct(localVector, ihat);
+  //   float euler_y = v_dotproduct(localVector, jhat);
+  //   float euler_z = v_dotproduct(localVector, khat);
+  
+  vector euler = {ihat.y, jhat.y, khat.y};
   v_normalize(euler);
 
-  float heading = normalizeDeg(rad2deg(atan2(i, j)));
+  float heading = normalizeDeg(rad2deg(atan2(ihat.y, jhat.y)));
+  float pitch = normalizeDeg(rad2deg(asin(khat.y)));
+  float roll = normalizeDeg(rad2deg(atan2(khat.x, khat.z)));
+
+
+
+//  quaternion q = {f(roll), euler.x, euler.y, euler.z};
 
 //  Serial.print("g");
 //  v_print(g);
@@ -127,6 +136,10 @@ void print_attitude()
 //  v_print(euler);
 //  Serial.print(" H:");
   Serial.print(heading);
+  Serial.print(" ");
+  Serial.print(pitch);
+  Serial.print(" ");
+  Serial.print(roll);
   Serial.println();
 }
 
