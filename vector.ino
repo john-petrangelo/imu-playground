@@ -33,6 +33,11 @@ vector v_opposite(vector const &v)
   return (vector){-v.x, -v.y, -v.z};
 }
 
+vector v_scale(float scalar, vector const &v)
+{
+  return (vector){scalar*v.x, scalar*v.y, scalar*v.z};
+}
+
 void v_print(vector const &v)
 {
   Serial.print("(");
