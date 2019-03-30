@@ -38,13 +38,18 @@ vector v_scale(float scalar, vector const &v)
   return (vector){scalar*v.x, scalar*v.y, scalar*v.z};
 }
 
-void v_print(vector const &v)
+void v_print(vector const &v, int digits)
 {
   Serial.print("(");
-  Serial.print(v.x, 2);
+  Serial.print(v.x, digits);
   Serial.print(",");
-  Serial.print(v.y, 2);
+  Serial.print(v.y, digits);
   Serial.print(",");
-  Serial.print(v.z, 2);
+  Serial.print(v.z, digits);
   Serial.print(")");
+}
+
+void v_print(vector const &v)
+{
+  v_print(v, 2);
 }
