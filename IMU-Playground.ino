@@ -1,20 +1,4 @@
-/*****************************************************************
-This Arduino sketch is a demo of the simple side of the
-t library. It'll demo the following:
-* How to create a LSM9DS1 object, using a constructor (global
-  variables section).
-* How to use the begin() function of the LSM9DS1 class.
-* How to read the gyroscope, accelerometer, and magnetometer
-  using the readGryo(), readAccel(), readMag() functions and 
-  the gx, gy, gz, ax, ay, az, mx, my, and mz variables.
-* How to calculate actual acceleration, rotation speed, 
-  magnetic field strength using the calcAccel(), calcGyro() 
-  and calcMag() functions.
-* How to use the data from the LSM9DS1 to calculate 
-  orientation and heading.
-*****************************************************************/
-// The SFE_LSM9DS1 library requires both Wire and SPI be
-// included BEFORE including the 9DS1 library.
+// The SFE_LSM9DS1 library requires both Wire and SPI be included BEFORE including the 9DS1 library.
 #include <Wire.h>
 #include <SPI.h>
 #include <SparkFunLSM9DS1.h>
@@ -30,10 +14,17 @@ struct vector {
   float z;
 };
 
+struct quaternion {
+  float w;
+  float x;
+  float y;
+  float z;
+};
+
 ////////////////////////////
 // Sketch Output Settings //
 ////////////////////////////
-#define PRINT_SPEED 250 // ms between prints
+#define PRINT_SPEED 100 // ms between prints
 #define UPDATE_SPEED 5 // ms between updates
 static unsigned long lastPrint = 0;
 static unsigned long lastUpdate = 0;
@@ -45,6 +36,8 @@ static int magCount = 0;
 void setup()
 {
   Serial.begin(115200);
+  Serial.println("H P R");
+
   initSensors();
 }
 
@@ -114,13 +107,41 @@ void print_attitude()
   vector euler = {ihat.y, jhat.y, khat.y};
   v_normalize(euler);
 
-  float heading = normalizeDeg(rad2deg(atan2(ihat.y, jhat.y)));
-  float pitch = normalizeDeg(rad2deg(asin(khat.y)));
-  float roll = normalizeDeg(rad2deg(atan2(khat.x, khat.z)));
+//  Serial.print(" e");
+//  v_print(euler);
 
+  quaternion q_euler = q_make(euler);
 
+//  Serial.print(" q_euler: ");
+//  q_print(q_euler);
 
-//  quaternion q = {f(roll), euler.x, euler.y, euler.z};
+  float headingRad = atan2(ihat.y, jhat.y);
+  float heading = normalizeDeg(rad2deg(headingRad));
+  
+  float pitchRad = asin(khat.y);
+  float pitch = normalizeDeg(rad2deg(pitchRad));
+
+  float rollRad = atan2(khat.x, khat.z);
+  float roll = normalizeDeg(rad2deg(rollRad));
+
+  // Make the quaternions to reverse the roll, undo the pitch, and turn the heading North.
+  quaternion q_roll = q_make(-rollRad/2, euler);
+  quaternion q_pitch = q_make(-pitchRad/2, euler);
+  quaternion q_heading = q_make(-headingRad/2, euler);
+
+  // Combine the individual rotations into a single quaternion.
+  quaternion q_rot = q_multiply(q_multiply(q_roll, q_pitch), q_heading);
+
+//  Serial.print(" q_rot: ");
+//  q_print(q_rot);
+
+  // rotation = q x euler x q*
+  quaternion q_left = q_multiply(q_rot, q_euler);
+  quaternion q_out = q_multiply(q_multiply(q_rot, q_euler), q_conjugate(q_rot));
+  vector v_out = q_vector(q_out);
+
+//  Serial.print(" v_out: ");
+//  v_print(v_out);
 
 //  Serial.print("g");
 //  v_print(g);
@@ -132,14 +153,13 @@ void print_attitude()
 //  v_print(jhat);
 //  Serial.print(" k");
 //  v_print(khat);
-//  Serial.print(" e");
-//  v_print(euler);
-//  Serial.print(" H:");
+//  Serial.print(" HPR:");
   Serial.print(heading);
   Serial.print(" ");
   Serial.print(pitch);
   Serial.print(" ");
   Serial.print(roll);
+
   Serial.println();
 }
 
