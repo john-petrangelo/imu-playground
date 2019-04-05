@@ -24,7 +24,7 @@ struct quaternion {
 ////////////////////////////
 // Sketch Output Settings //
 ////////////////////////////
-#define PRINT_SPEED 100 // ms between prints
+#define PRINT_SPEED 1000 // ms between prints
 #define UPDATE_SPEED 5 // ms between updates
 static unsigned long lastPrint = 0;
 static unsigned long lastUpdate = 0;
@@ -36,7 +36,6 @@ static int magCount = 0;
 void setup()
 {
   Serial.begin(115200);
-  Serial.println("H P R");
 
   initSensors();
 }
@@ -87,16 +86,24 @@ void print_attitude()
   vector g = getAccel();
   vector mag = getMag();
 
+  // khat represents the direction of "up" expressed relative to the sensor.
   vector khat = v_opposite(g);
   v_normalize(khat);
 
+  // ihat represents the direction of "east" expressed relative to the sensor.
   vector ihat = v_crossproduct(mag, khat);
   v_normalize(ihat);
-  
+
+  // jhat represents the direction of "north" expressed relative to the sensor.
   vector jhat = v_crossproduct(khat, ihat);
   v_normalize(jhat);
 
+  Serial.print(" [ijk]hat: ");
+  v_print(ihat);
+  v_print(jhat);
+  v_print(khat);
 
+  // The euler vector is the orientation of the sensor expressed in global coordinates.
   // The euler vector is made up of the projection (i.e. dot product)
   // of the local vector over each of the global unit vectors (i, j, k).
   //   vector localVector = {0.0, 1.0, 0.0};
@@ -110,24 +117,28 @@ void print_attitude()
 //  Serial.print(" e");
 //  v_print(euler);
 
-  quaternion q_euler = q_make(euler);
-
-//  Serial.print(" q_euler: ");
-//  q_print(q_euler);
-
   float headingRad = atan2(ihat.y, jhat.y);
-  float heading = normalizeDeg(rad2deg(headingRad));
-  
   float pitchRad = asin(khat.y);
-  float pitch = normalizeDeg(rad2deg(pitchRad));
-
   float rollRad = atan2(khat.x, khat.z);
+
+  float heading = normalizeDeg(rad2deg(headingRad));
+  float pitch = normalizeDeg(rad2deg(pitchRad));
   float roll = normalizeDeg(rad2deg(rollRad));
 
+  Serial.print(" HPR:");
+  Serial.print(heading);
+  Serial.print(" ");
+  Serial.print(pitch);
+  Serial.print(" ");
+  Serial.print(roll);
+
   // Make the quaternions to reverse the roll, undo the pitch, and turn the heading North.
-  quaternion q_roll = q_make(-rollRad/2, euler);
-  quaternion q_pitch = q_make(-pitchRad/2, euler);
-  quaternion q_heading = q_make(-headingRad/2, euler);
+  quaternion q_roll = q_make(rollRad/2, jhat);
+  quaternion q_pitch = q_make(-pitchRad/2, ihat);
+  quaternion q_heading = q_make(headingRad/2, khat);
+
+//  Serial.print(" q_heading: ");
+//  q_print(q_heading);
 
   // Combine the individual rotations into a single quaternion.
   quaternion q_rot = q_multiply(q_multiply(q_roll, q_pitch), q_heading);
@@ -135,14 +146,27 @@ void print_attitude()
 //  Serial.print(" q_rot: ");
 //  q_print(q_rot);
 
+  // q_euler is the euler vector expressed as a quaternion.
+  quaternion q_euler = q_make(euler);
+
+//  Serial.print(" q_euler: ");
+//  q_print(q_euler);
+
   // rotation = q x euler x q*
   quaternion q_left = q_multiply(q_rot, q_euler);
-  quaternion q_out = q_multiply(q_multiply(q_rot, q_euler), q_conjugate(q_rot));
-  vector v_out = q_vector(q_out);
+  quaternion q_out = q_multiply(q_left, q_conjugate(q_rot));
+//  Serial.print(" q_left: ");
+//  q_print(q_left);
+//  Serial.print(" q_out: ");
+//  q_print(q_out);
 
-//  Serial.print(" v_out: ");
-//  v_print(v_out);
-
+  Serial.print(" v_out: ");
+  v_print(q_vector(q_out));
+//  Serial.print(v_out.x);
+//  Serial.print(" ");
+//  Serial.print(v_out.y);
+//  Serial.print(" ");
+//  Serial.print(v_out.z);
 //  Serial.print("g");
 //  v_print(g);
 //  Serial.print(" m");
@@ -153,12 +177,6 @@ void print_attitude()
 //  v_print(jhat);
 //  Serial.print(" k");
 //  v_print(khat);
-//  Serial.print(" HPR:");
-  Serial.print(heading);
-  Serial.print(" ");
-  Serial.print(pitch);
-  Serial.print(" ");
-  Serial.print(roll);
 
   Serial.println();
 }
