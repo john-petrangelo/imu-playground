@@ -28,3 +28,17 @@ float normalizeDeg(float in) {
 
   return out;
 }
+
+inline float sqr(float x) {
+  return x * x;
+}
+
+// Print the attitude as specified by heading, pitch, and roll.
+void print_attitude(float heading, float pitch, float roll) {
+  Serial.print(" HPR:");
+  Serial.print(heading);
+  Serial.print(" ");
+  Serial.print(pitch);
+  Serial.print(" ");
+  Serial.print(roll);
+}

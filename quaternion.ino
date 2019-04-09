@@ -24,6 +24,22 @@ quaternion q_multiply(quaternion const &q1, quaternion const &q2)
   };
 }
 
+float q_magnitude(quaternion const &q)
+{
+  return sqrt((q.w * q.w) + (q.x * q.x) + (q.y * q.y) + (q.z * q.z));
+}
+
+quaternion q_normalize(quaternion &q)
+{
+  float magnitude = q_magnitude(q);
+  q.w /= magnitude;
+  q.x /= magnitude;
+  q.y /= magnitude;
+  q.z /= magnitude;
+
+  return q;
+}
+
 vector q_vector(quaternion const &q)
 {
   return vector{q.x, q.y, q.z};
@@ -31,7 +47,6 @@ vector q_vector(quaternion const &q)
 
 void q_print(quaternion const &q, int digits)
 {
-  Serial.print("(");
   Serial.print(q.w, digits);
   Serial.print(",");
   Serial.print(q.x, digits);
@@ -39,7 +54,6 @@ void q_print(quaternion const &q, int digits)
   Serial.print(q.y, digits);
   Serial.print(",");
   Serial.print(q.z, digits);
-  Serial.print(")");
 }
 
 void q_print(quaternion const &q)

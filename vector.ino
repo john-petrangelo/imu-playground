@@ -18,14 +18,15 @@ float v_magnitude(vector const &v)
   return sqrt(v_dotproduct(v, v));
 }
 
-vector v_normalize(vector &v)
+vector v_normalize(vector const &v)
 {
   float magnitude = v_magnitude(v);
-  v.x /= magnitude;
-  v.y /= magnitude;
-  v.z /= magnitude;
+  vector vout = v;
+  vout.x /= magnitude;
+  vout.y /= magnitude;
+  vout.z /= magnitude;
 
-  return v;
+  return vout;
 }
 
 vector v_opposite(vector const &v)
@@ -40,13 +41,11 @@ vector v_scale(float scalar, vector const &v)
 
 void v_print(vector const &v, int digits)
 {
-  Serial.print("(");
   Serial.print(v.x, digits);
   Serial.print(",");
   Serial.print(v.y, digits);
   Serial.print(",");
   Serial.print(v.z, digits);
-  Serial.print(")");
 }
 
 void v_print(vector const &v)

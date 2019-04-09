@@ -3,29 +3,18 @@
 #include <SPI.h>
 #include <SparkFunLSM9DS1.h>
 
+#include "common.h"
+
 //////////////////////////
 // LSM9DS1 Library Init //
 //////////////////////////
 LSM9DS1 imu;
 
-struct vector {
-  float x;
-  float y;
-  float z;
-};
-
-struct quaternion {
-  float w;
-  float x;
-  float y;
-  float z;
-};
-
 ////////////////////////////
 // Sketch Output Settings //
 ////////////////////////////
-#define PRINT_SPEED 1000 // ms between prints
-#define UPDATE_SPEED 5 // ms between updates
+unsigned long const PRINT_SPEED = 250; // ms between prints
+unsigned long const  UPDATE_SPEED = 5; // ms between updates
 static unsigned long lastPrint = 0;
 static unsigned long lastUpdate = 0;
 
@@ -49,7 +38,10 @@ void loop()
     // For the first second use mag and accel.
     if ((lastPrint + PRINT_SPEED) < now)
     {
-      initAttitude();
+        vector const accel = getAccel();
+        vector const mag = getMag();
+
+      init_attitude_with_accel_mag(accel, mag);
       printUpdate();
       lastPrint = now;
       resetCounts();
@@ -58,7 +50,7 @@ void loop()
      // After one second use the gyro.
      if ((lastUpdate + UPDATE_SPEED) < now)
      {
-       updateGyroAttitude();
+       update_attitude_with_gyro();
        lastUpdate = now;
      }
 
@@ -67,116 +59,64 @@ void loop()
        lastPrint = now;
 //       printUpdate();
 //       resetCounts();
-      print_attitude();
+      calc_attitude_with_accel_mag();
     }
   }
 }
 
 void printUpdate()
 {
-//    updateGyroAttitude();
-    plotGyroAttitude();
+//    update_gyro_attitude();
+    plot_gyro_attitude();
 
     Serial.println();  
 }
 
-void print_attitude()
+void calc_attitude_with_accel_mag()
 {
   // Read the accelerometer and 
-  vector g = getAccel();
+  vector accel = getAccel();
   vector mag = getMag();
 
-  // khat represents the direction of "up" expressed relative to the sensor.
-  vector khat = v_opposite(g);
-  v_normalize(khat);
+  attitude_t attitude = get_attitude_from_accel_mag(accel, mag);
+  vector const &euler = attitude.euler;
+  vector const &ihat = attitude.ihat;
+  vector const &jhat = attitude.jhat;
+  vector const &khat = attitude.khat;
 
-  // ihat represents the direction of "east" expressed relative to the sensor.
-  vector ihat = v_crossproduct(mag, khat);
-  v_normalize(ihat);
+  Serial.print(" e:");
+  v_print(euler);
 
-  // jhat represents the direction of "north" expressed relative to the sensor.
-  vector jhat = v_crossproduct(khat, ihat);
-  v_normalize(jhat);
-
-  Serial.print(" [ijk]hat: ");
-  v_print(ihat);
-  v_print(jhat);
-  v_print(khat);
-
-  // The euler vector is the orientation of the sensor expressed in global coordinates.
-  // The euler vector is made up of the projection (i.e. dot product)
-  // of the local vector over each of the global unit vectors (i, j, k).
-  //   vector localVector = {0.0, 1.0, 0.0};
-  //   float euler_x = v_dotproduct(localVector, ihat);
-  //   float euler_y = v_dotproduct(localVector, jhat);
-  //   float euler_z = v_dotproduct(localVector, khat);
-  
-  vector euler = {ihat.y, jhat.y, khat.y};
-  v_normalize(euler);
-
-//  Serial.print(" e");
-//  v_print(euler);
-
-  float headingRad = atan2(ihat.y, jhat.y);
-  float pitchRad = asin(khat.y);
-  float rollRad = atan2(khat.x, khat.z);
+  float const headingRad = atan2(ihat.y, jhat.y);
+  float const pitchRad = asin(khat.y);
+  float const rollRad = atan2(khat.x, khat.z);
 
   float heading = normalizeDeg(rad2deg(headingRad));
   float pitch = normalizeDeg(rad2deg(pitchRad));
   float roll = normalizeDeg(rad2deg(rollRad));
 
-  Serial.print(" HPR:");
-  Serial.print(heading);
-  Serial.print(" ");
-  Serial.print(pitch);
-  Serial.print(" ");
-  Serial.print(roll);
+  print_attitude(heading, pitch, roll);
 
   // Make the quaternions to reverse the roll, undo the pitch, and turn the heading North.
   quaternion q_roll = q_make(rollRad/2, jhat);
   quaternion q_pitch = q_make(-pitchRad/2, ihat);
   quaternion q_heading = q_make(headingRad/2, khat);
 
-//  Serial.print(" q_heading: ");
-//  q_print(q_heading);
-
   // Combine the individual rotations into a single quaternion.
   quaternion q_rot = q_multiply(q_multiply(q_roll, q_pitch), q_heading);
-
-//  Serial.print(" q_rot: ");
-//  q_print(q_rot);
 
   // q_euler is the euler vector expressed as a quaternion.
   quaternion q_euler = q_make(euler);
 
-//  Serial.print(" q_euler: ");
-//  q_print(q_euler);
-
   // rotation = q x euler x q*
-  quaternion q_left = q_multiply(q_rot, q_euler);
-  quaternion q_out = q_multiply(q_left, q_conjugate(q_rot));
-//  Serial.print(" q_left: ");
-//  q_print(q_left);
-//  Serial.print(" q_out: ");
-//  q_print(q_out);
+  quaternion q_out = q_multiply(q_multiply(q_rot, q_euler), q_conjugate(q_rot));
 
-  Serial.print(" v_out: ");
+  Serial.print(" v_out:");
   v_print(q_vector(q_out));
-//  Serial.print(v_out.x);
-//  Serial.print(" ");
-//  Serial.print(v_out.y);
-//  Serial.print(" ");
-//  Serial.print(v_out.z);
-//  Serial.print("g");
-//  v_print(g);
-//  Serial.print(" m");
-//  v_print(mag);
-//  Serial.print(" i");
-//  v_print(ihat);
-//  Serial.print(" j");
-//  v_print(jhat);
-//  Serial.print(" k");
-//  v_print(khat);
+
+  vector v_gyro = getGyro();
+  Serial.print(" gyro:");
+  v_print(v_gyro);
 
   Serial.println();
 }
