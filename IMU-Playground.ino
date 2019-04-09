@@ -98,18 +98,18 @@ void calc_attitude_with_accel_mag()
   print_attitude(heading, pitch, roll);
 
   // Make the quaternions to reverse the roll, undo the pitch, and turn the heading North.
-  quaternion q_roll = q_make(rollRad/2, jhat);
-  quaternion q_pitch = q_make(-pitchRad/2, ihat);
-  quaternion q_heading = q_make(headingRad/2, khat);
+  quaternion_t q_roll = q_make(rollRad/2, jhat);
+  quaternion_t q_pitch = q_make(-pitchRad/2, ihat);
+  quaternion_t q_heading = q_make(headingRad/2, khat);
 
   // Combine the individual rotations into a single quaternion.
-  quaternion q_rot = q_multiply(q_multiply(q_roll, q_pitch), q_heading);
+  quaternion_t q_rot = q_multiply(q_multiply(q_roll, q_pitch), q_heading);
 
   // q_euler is the euler vector expressed as a quaternion.
-  quaternion q_euler = q_make(euler);
+  quaternion_t q_euler = q_make(euler);
 
   // rotation = q x euler x q*
-  quaternion q_out = q_multiply(q_multiply(q_rot, q_euler), q_conjugate(q_rot));
+  quaternion_t q_out = q_multiply(q_multiply(q_rot, q_euler), q_conjugate(q_rot));
 
   Serial.print(" v_out:");
   v_print(q_vector(q_out));
