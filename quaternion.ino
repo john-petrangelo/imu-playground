@@ -1,11 +1,11 @@
-quaternion q_make(vector const &v)
+quaternion q_make(vector_t const &v)
 {
   return (quaternion){0, v.x, v.y, v.z};
 }
 
-quaternion q_make(float angle, vector const &v)
+quaternion q_make(float angle, vector_t const &v)
 {
-  vector scaledV = v_scale(sin(angle), v);
+  vector_t scaledV = v_scale(sin(angle), v);
   return (quaternion){cos(angle), scaledV.x, scaledV.y, scaledV.z};
 }
 
@@ -40,9 +40,9 @@ quaternion q_normalize(quaternion &q)
   return q;
 }
 
-vector q_vector(quaternion const &q)
+vector_t q_vector(quaternion const &q)
 {
-  return vector{q.x, q.y, q.z};
+  return vector_t{q.x, q.y, q.z};
 }
 
 void q_print(quaternion const &q, int digits)

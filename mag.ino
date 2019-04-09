@@ -6,17 +6,17 @@
 // With full rotations, use the following:
 // MIN(-0.42, -0.38, -0.87) MAX(0.70, 0.72, 0.36)
 // min(-0.38, -0.27, -0.71) max(0.54,0.69,0.31)
-static const vector MAG_MIN = {-0.38, -0.27, -0.71};
-static const vector MAG_MAX = {0.54,0.69,0.31};
+static const vector_t MAG_MIN = {-0.38, -0.27, -0.71};
+static const vector_t MAG_MAX = {0.54,0.69,0.31};
 
 //static const vector MAG_MIN = {-0.06,-0.21,-0.87};
 //static const vector MAG_MAX = {0.46,0.35,-0.75};
 
-static vector magRaw = {0};
-static vector magAdj = {0};
+static vector_t magRaw = {0};
+static vector_t magAdj = {0};
 
-static vector magMinSeen = { 999.0,  999.0,  999.0};
-static vector magMaxSeen = {-999.0, -999.0, -999.0};
+static vector_t magMinSeen = { 999.0,  999.0,  999.0};
+static vector_t magMaxSeen = {-999.0, -999.0, -999.0};
 
 // Earth's magnetic field varies by location. Add or subtract 
 // a declination to get a more accurate heading. Calculate 
@@ -43,7 +43,7 @@ void readMag()
   magMaxSeen.z = max(magMaxSeen.z, magRaw.z);
 }
 
-vector getMag()
+vector_t getMag()
 {
   return magAdj;
 }

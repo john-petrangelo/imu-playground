@@ -38,8 +38,8 @@ void loop()
     // For the first second use mag and accel.
     if ((lastPrint + PRINT_SPEED) < now)
     {
-        vector const accel = getAccel();
-        vector const mag = getMag();
+        vector_t const accel = getAccel();
+        vector_t const mag = getMag();
 
       init_attitude_with_accel_mag(accel, mag);
       printUpdate();
@@ -75,14 +75,14 @@ void printUpdate()
 void calc_attitude_with_accel_mag()
 {
   // Read the accelerometer and 
-  vector accel = getAccel();
-  vector mag = getMag();
+  vector_t accel = getAccel();
+  vector_t mag = getMag();
 
   attitude_t attitude = get_attitude_from_accel_mag(accel, mag);
-  vector const &euler = attitude.euler;
-  vector const &ihat = attitude.ihat;
-  vector const &jhat = attitude.jhat;
-  vector const &khat = attitude.khat;
+  vector_t const &euler = attitude.euler;
+  vector_t const &ihat = attitude.ihat;
+  vector_t const &jhat = attitude.jhat;
+  vector_t const &khat = attitude.khat;
 
   Serial.print(" e:");
   v_print(euler);
@@ -114,7 +114,7 @@ void calc_attitude_with_accel_mag()
   Serial.print(" v_out:");
   v_print(q_vector(q_out));
 
-  vector v_gyro = getGyro();
+  vector_t v_gyro = getGyro();
   Serial.print(" gyro:");
   v_print(v_gyro);
 

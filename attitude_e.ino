@@ -11,14 +11,14 @@ static quaternion q_current_euler;
 // Heading calculations taken from this app note:
 // http://www51.honeywell.com/aero/common/documents/myaerospacecatalog-documents/Defense_Brochures-documents/Magnetic__Literature_Application_notes-documents/AN203_Compass_Heading_Using_Magnetometers.pdf
 
-void init_attitude_with_accel_mag(vector const &accel, vector const &mag)
+void init_attitude_with_accel_mag(vector_t const &accel, vector_t const &mag)
 {
   attitude_t attitude = get_attitude_from_accel_mag(accel, mag);
   q_current_euler = q_make(attitude.euler);
   lastUpdateTime = millis();
 }
 
-attitude_t get_attitude_from_accel_mag(vector const &accel, vector const &mag)
+attitude_t get_attitude_from_accel_mag(vector_t const &accel, vector_t const &mag)
 {
   attitude_t attitude;
   
@@ -48,7 +48,7 @@ attitude_t get_attitude_from_accel_mag(vector const &accel, vector const &mag)
   //   float euler_y = v_dotproduct(localVector, jhat);
   //   float euler_z = v_dotproduct(localVector, khat);
 
-  attitude.euler = v_normalize(vector{
+  attitude.euler = v_normalize(vector_t{
     attitude.ihat.y,
     attitude.jhat.y,
     attitude.khat.y
@@ -60,7 +60,7 @@ attitude_t get_attitude_from_accel_mag(vector const &accel, vector const &mag)
 void update_attitude_with_gyro()
 {
   long now = millis();
-  vector const gyro = getGyro();
+  vector_t const gyro = getGyro();
 
   // Calculate delta time in seconds.
   float dt = (now - lastUpdateTime) * 0.001;
@@ -70,9 +70,9 @@ void update_attitude_with_gyro()
   float delta_heading = deg2rad(gyro.z * dt);
 
   // Create quaternion representing rotation on all three axes.
-  quaternion q_roll =    q_make(delta_roll / 2, vector{0.0, 1.0, 0.0});
-  quaternion q_pitch =   q_make(delta_pitch / 2, vector{1.0, 0.0, 0.0});
-  quaternion q_heading = q_make(delta_heading / 2, vector{0.0, 0.0, 1.0});
+  quaternion q_roll =    q_make(delta_roll / 2, vector_t{0.0, 1.0, 0.0});
+  quaternion q_pitch =   q_make(delta_pitch / 2, vector_t{1.0, 0.0, 0.0});
+  quaternion q_heading = q_make(delta_heading / 2, vector_t{0.0, 0.0, 1.0});
 
   // Combine the individual rotations into a single quaternion.
   quaternion q_rot = q_multiply(q_multiply(q_roll, q_pitch), q_heading);

@@ -1,4 +1,4 @@
-static vector accelRaw = {0};
+static vector_t accelRaw = {0};
 
 void readAccel()
 {
@@ -7,7 +7,7 @@ void readAccel()
   accelRaw.z = -imu.calcAccel(imu.az);
 }
 
-vector getAccel()
+vector_t getAccel()
 {
   return accelRaw;
 }
