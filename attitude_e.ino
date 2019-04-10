@@ -81,8 +81,7 @@ void update_attitude_with_gyro()
   quaternion_t q_euler = q_make(q_vector(q_current_euler));
 
   // rotation = q x euler x q*
-  q_current_euler = q_multiply(q_multiply(q_rot, q_euler), q_conjugate(q_rot));
-  q_normalize(q_current_euler);
+  q_current_euler = q_normalize(q_multiply(q_multiply(q_rot, q_euler), q_conjugate(q_rot)));
 
   lastUpdateTime = now;
 }

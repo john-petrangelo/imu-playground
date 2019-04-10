@@ -1,4 +1,4 @@
-OBJ_FILES = vector.o
+OBJ_FILES = quaternion.o vector.o
 TEST_SRC_FILES = $(wildcard *.cc)
 TEST_OBJ_FILES = $(TEST_SRC_FILES:.cc=.o)
 TEST_DEP_FILES = $(TEST_SRC_FILES:.cc=.d)
@@ -11,20 +11,28 @@ all: unit_tests
 -include $(TEST_DEP_FILES)
 
 unit_tests: $(OBJ_FILES) $(TEST_OBJ_FILES)
-	g++ -o $@ $(LDFLAGS) $^
+	@echo "Linking unit test executable"
+	@g++ -o $@ $(LDFLAGS) $^
 
-vector.o: ../vector.ino ../common.h
-	g++ -c $(CFLAGS) -o $@ $<	
-
-%.d: %.cc
-	g++ $(CFLAGS) $< -MM -MT $(@:.d=.o) >$@
+%.o: ../%.ino
+	@echo "Compiling arduino file $<"
+	@g++ -c $(CFLAGS) -o $@ $<	
 
 %.o: %.cc
-	g++ -c $(CFLAGS) -o $@ $<
+	@echo "Compiling tests file $<"
+	@g++ -c $(CFLAGS) -o $@ $<
+
+%.o: ../common.h
+
+%.d: %.cc
+	@echo "Generating dependencies for $<"
+	@g++ $(CFLAGS) $< -MM -MT $(@:.d=.o) > $@
+
+.PHONY: clean test
 
 test: unit_tests
-	./unit_tests
+	@./unit_tests
 
-.PHONY: clean
 clean:
+	@echo "Removing generated files"
 	@rm -f *.o *.d unit_tests

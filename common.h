@@ -47,7 +47,7 @@ quaternion_t q_conjugate(quaternion_t const &q);
 quaternion_t q_multiply(quaternion_t const &q1, quaternion_t const &q2);
 
 float q_magnitude(quaternion_t const &q);
-quaternion_t q_normalize(quaternion_t &q);
+quaternion_t q_normalize(quaternion_t const &q);
 
 vector_t q_vector(quaternion_t const &q);
 
