@@ -1,5 +1,7 @@
-// Custom types
+#ifndef __COMMON_H__
+#define __COMMON_H__
 
+// Custom types
 struct vector_t {
   float x;
   float y;
@@ -51,3 +53,5 @@ vector_t q_vector(quaternion_t const &q);
 
 void q_print(quaternion_t const &q, int digits);
 void q_print(quaternion_t const &q);
+
+#endif /* __COMMON_H__ */
