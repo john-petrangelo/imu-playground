@@ -10,7 +10,7 @@ quaternion_t q_make(vector_t const &v)
 
 quaternion_t q_make(float angle, vector_t const &v)
 {
-  vector_t scaledV = v_scale(sin(angle), v);
+  vector_t scaledV = v.scale(sin(angle));
   return (quaternion_t){cos(angle), scaledV.x, scaledV.y, scaledV.z};
 }
 

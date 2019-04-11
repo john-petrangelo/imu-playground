@@ -85,7 +85,7 @@ void calc_attitude_with_accel_mag()
   vector_t const &khat = attitude.khat;
 
   Serial.print(" e:");
-  v_print(euler);
+  euler.print();
 
   float const headingRad = atan2(ihat.y, jhat.y);
   float const pitchRad = asin(khat.y);
@@ -112,11 +112,11 @@ void calc_attitude_with_accel_mag()
   quaternion_t q_out = q_multiply(q_multiply(q_rot, q_euler), q_conjugate(q_rot));
 
   Serial.print(" v_out:");
-  v_print(q_vector(q_out));
+  q_vector(q_out).print();
 
   vector_t v_gyro = getGyro();
   Serial.print(" gyro:");
-  v_print(v_gyro);
+  v_gyro.print();
 
   Serial.println();
 }

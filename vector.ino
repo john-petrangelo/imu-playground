@@ -3,62 +3,77 @@
 #include "common.h"
 #endif
 
-vector_t v_crossproduct(vector_t const &a, vector_t const &b) {
-  vector_t prod;
+vector_t::vector_t() {
+  vector_t();
+}
 
-  prod.x = (a.y * b.z) - (a.z * b.y);
-  prod.y = (a.z * b.x) - (a.x * b.z);
-  prod.z = (a.x * b.y) - (a.y * b.x);
+vector_t::vector_t(float x, float y, float z) : x(x), y(y), z(z) {}
+
+/*
+ * Calculate the cross product of this vector and another vector (this x other).
+ */
+vector_t vector_t::crossproduct(vector_t const &other) const {
+  vector_t prod = (vector_t){
+    (y * other.z) - (z * other.y),
+    (z * other.x) - (x * other.z),
+    (x * other.y) - (y * other.x)
+  };
 
   return prod;
 }
 
-float v_dotproduct(vector_t const &a, vector_t const &b)
+/*
+ * Calculate the dot product of this vector and another vector (this x other).
+ */
+float vector_t::dotproduct(vector_t const &other) const
 {
-  return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+  return (x * other.x) + (y * other.y) + (z * other.z);
 }
 
-float v_magnitude(vector_t const &v)
+/*
+ * Calculate the magnitude of this vector.
+ */
+float vector_t::magnitude() const
 {
-  return sqrt(v_dotproduct(v, v));
+  return sqrt(dotproduct(*this));
 }
 
-vector_t v_normalize(vector_t const &v)
+/*
+ * Return the unit vector pointing in the same direction as this vector.
+ */
+vector_t vector_t::normalize() const
 {
-  float magnitude = v_magnitude(v);
-  vector_t vout = v;
+  float m = magnitude();
 
-  if (magnitude != 0.0) {
-    vout.x /= magnitude;
-    vout.y /= magnitude;
-    vout.z /= magnitude;
+  if (m == 0.0) {
+    return *this;
+  } else {
+    return scale(1.0 / m);
   }
-
-  return vout;
 }
 
-vector_t v_opposite(vector_t const &v)
+vector_t vector_t::opposite() const
 {
-  return (vector_t){-v.x, -v.y, -v.z};
+  return (vector_t){-x, -y, -z};
 }
 
-vector_t v_scale(float scalar, vector_t const &v)
+vector_t vector_t::scale(float scalar) const
 {
-  return (vector_t){scalar*v.x, scalar*v.y, scalar*v.z};
+  return (vector_t){scalar * x, scalar * y, scalar * z};
 }
 
-void v_print(vector_t const &v, int digits)
+void vector_t::print(int digits) const
 {
 #ifdef ARDUINO
-  Serial.print(v.x, digits);
+  Serial.print(x, digits);
   Serial.print(",");
-  Serial.print(v.y, digits);
+  Serial.print(y, digits);
   Serial.print(",");
-  Serial.print(v.z, digits);
+  Serial.print(z, digits);
 #endif
 }
 
-void v_print(vector_t const &v)
+void vector_t::print() const
 {
-  v_print(v, 2);
+  print(2);
 }

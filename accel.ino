@@ -1,10 +1,12 @@
-static vector_t accelRaw = {0};
+static vector_t accelRaw;
 
 void readAccel()
 {
-  accelRaw.x =  imu.calcAccel(imu.ax);
-  accelRaw.y = -imu.calcAccel(imu.ay);
-  accelRaw.z = -imu.calcAccel(imu.az);
+  accelRaw = vector_t(
+    imu.calcAccel(imu.ax),
+    -imu.calcAccel(imu.ay),
+    -imu.calcAccel(imu.az)
+  );
 }
 
 vector_t getAccel()
@@ -23,6 +25,6 @@ void plotAccel()
   Serial.print(" ");
   Serial.print(accelRaw.z, 2);
   Serial.print(" ");
-  Serial.print(v_magnitude(accelRaw), 2);
+  Serial.print(accelRaw.magnitude(), 2);
   Serial.print(" ");
 }

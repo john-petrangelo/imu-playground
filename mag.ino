@@ -12,11 +12,11 @@ static const vector_t MAG_MAX = {0.54,0.69,0.31};
 //static const vector MAG_MIN = {-0.06,-0.21,-0.87};
 //static const vector MAG_MAX = {0.46,0.35,-0.75};
 
-static vector_t magRaw = {0};
-static vector_t magAdj = {0};
+static vector_t magRaw;
+static vector_t magAdj;
 
-static vector_t magMinSeen = { 999.0,  999.0,  999.0};
-static vector_t magMaxSeen = {-999.0, -999.0, -999.0};
+static vector_t magMinSeen = vector_t( 999.0,  999.0,  999.0);
+static vector_t magMaxSeen = vector_t(-999.0, -999.0, -999.0);
 
 // Earth's magnetic field varies by location. Add or subtract 
 // a declination to get a more accurate heading. Calculate 
@@ -26,21 +26,29 @@ static vector_t magMaxSeen = {-999.0, -999.0, -999.0};
 
 void readMag()
 {
-  magRaw.x = imu.calcMag(imu.mx);
-  magRaw.y = imu.calcMag(imu.my);
-  magRaw.z = imu.calcMag(imu.mz);
-  
-  magAdj.x = fmap(magRaw.x, MAG_MIN.x, MAG_MAX.x, -1.0, 1.0);
-  magAdj.y = fmap(magRaw.y, MAG_MIN.y, MAG_MAX.y, -1.0, 1.0);
-  magAdj.z = fmap(magRaw.z, MAG_MIN.z, MAG_MAX.z, -1.0, 1.0);  
+  magRaw = (vector_t){
+    imu.calcMag(imu.mx),
+    imu.calcMag(imu.my),
+    imu.calcMag(imu.mz)
+  };
+    
+  magAdj = (vector_t){
+    fmap(magRaw.x, MAG_MIN.x, MAG_MAX.x, -1.0, 1.0),
+    fmap(magRaw.y, MAG_MIN.y, MAG_MAX.y, -1.0, 1.0),
+    fmap(magRaw.z, MAG_MIN.z, MAG_MAX.z, -1.0, 1.0)
+  };
 
-  magMinSeen.x = min(magMinSeen.x, magRaw.x);
-  magMinSeen.y = min(magMinSeen.y, magRaw.y);
-  magMinSeen.z = min(magMinSeen.z, magRaw.z);
+  magMinSeen = vector_t{
+    min(magMinSeen.x, magRaw.x),
+    min(magMinSeen.y, magRaw.y),
+    min(magMinSeen.z, magRaw.z)
+  };
 
-  magMaxSeen.x = max(magMaxSeen.x, magRaw.x);
-  magMaxSeen.y = max(magMaxSeen.y, magRaw.y);
-  magMaxSeen.z = max(magMaxSeen.z, magRaw.z);
+  magMaxSeen = vector_t(
+    max(magMaxSeen.x, magRaw.x),
+    max(magMaxSeen.y, magRaw.y),
+    max(magMaxSeen.z, magRaw.z)
+  );
 }
 
 vector_t getMag()

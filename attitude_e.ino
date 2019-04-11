@@ -27,13 +27,13 @@ attitude_t get_attitude_from_accel_mag(vector_t const &accel, vector_t const &ma
   // Later we'll need to address not using accelerometer for g when we're moving.
   
   // khat represents the direction of "up" expressed relative to the sensor.
-  attitude.khat = v_normalize(v_opposite(accel));
+  attitude.khat = accel.opposite().normalize();
 
   // ihat represents the direction of "east" expressed relative to the sensor.
-  attitude.ihat = v_normalize(v_crossproduct(mag, attitude.khat));
+  attitude.ihat = mag.crossproduct(attitude.khat).normalize();
 
   // jhat represents the direction of "north" expressed relative to the sensor.
-  attitude.jhat = v_normalize(v_crossproduct(attitude.khat, attitude.ihat));
+  attitude.jhat = attitude.khat.crossproduct(attitude.ihat).normalize();
 
 //  Serial.print(" [ijk]hat: ");
 //  v_print(ihat);
@@ -48,11 +48,11 @@ attitude_t get_attitude_from_accel_mag(vector_t const &accel, vector_t const &ma
   //   float euler_y = v_dotproduct(localVector, jhat);
   //   float euler_z = v_dotproduct(localVector, khat);
 
-  attitude.euler = v_normalize(vector_t{
+  attitude.euler = vector_t(
     attitude.ihat.y,
     attitude.jhat.y,
     attitude.khat.y
-  });
+  ).normalize();
 
   return attitude;
 }
