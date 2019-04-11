@@ -3,14 +3,14 @@
 #include "common.h"
 #endif
 
-quaternion_t q_make(vector_t const &v)
+quaternion_t q_make(Vector const &v)
 {
   return (quaternion_t){0, v.x, v.y, v.z};
 }
 
-quaternion_t q_make(float angle, vector_t const &v)
+quaternion_t q_make(float angle, Vector const &v)
 {
-  vector_t scaledV = v.scale(sin(angle));
+  Vector scaledV = v.scale(sin(angle));
   return (quaternion_t){cos(angle), scaledV.x, scaledV.y, scaledV.z};
 }
 
@@ -49,9 +49,9 @@ quaternion_t q_normalize(quaternion_t const &q)
   return q_out;
 }
 
-vector_t q_vector(quaternion_t const &q)
+Vector q_vector(quaternion_t const &q)
 {
-  return vector_t{q.x, q.y, q.z};
+  return Vector{q.x, q.y, q.z};
 }
 
 void q_print(quaternion_t const &q, int digits)

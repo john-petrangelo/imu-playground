@@ -1,15 +1,15 @@
-static vector_t accelRaw;
+static Vector accelRaw;
 
 void readAccel()
 {
-  accelRaw = vector_t(
+  accelRaw = Vector(
     imu.calcAccel(imu.ax),
     -imu.calcAccel(imu.ay),
     -imu.calcAccel(imu.az)
   );
 }
 
-vector_t getAccel()
+Vector getAccel()
 {
   return accelRaw;
 }

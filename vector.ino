@@ -3,17 +3,17 @@
 #include "common.h"
 #endif
 
-vector_t::vector_t() {
-  vector_t();
+Vector::Vector() {
+  Vector();
 }
 
-vector_t::vector_t(float x, float y, float z) : x(x), y(y), z(z) {}
+Vector::Vector(float x, float y, float z) : x(x), y(y), z(z) {}
 
 /*
  * Calculate the cross product of this vector and another vector (this x other).
  */
-vector_t vector_t::crossproduct(vector_t const &other) const {
-  vector_t prod = (vector_t){
+Vector Vector::crossproduct(Vector const &other) const {
+  Vector prod = (Vector){
     (y * other.z) - (z * other.y),
     (z * other.x) - (x * other.z),
     (x * other.y) - (y * other.x)
@@ -25,7 +25,7 @@ vector_t vector_t::crossproduct(vector_t const &other) const {
 /*
  * Calculate the dot product of this vector and another vector (this x other).
  */
-float vector_t::dotproduct(vector_t const &other) const
+float Vector::dotproduct(Vector const &other) const
 {
   return (x * other.x) + (y * other.y) + (z * other.z);
 }
@@ -33,7 +33,7 @@ float vector_t::dotproduct(vector_t const &other) const
 /*
  * Calculate the magnitude of this vector.
  */
-float vector_t::magnitude() const
+float Vector::magnitude() const
 {
   return sqrt(dotproduct(*this));
 }
@@ -41,7 +41,7 @@ float vector_t::magnitude() const
 /*
  * Return the unit vector pointing in the same direction as this vector.
  */
-vector_t vector_t::normalize() const
+Vector Vector::normalize() const
 {
   float m = magnitude();
 
@@ -52,17 +52,17 @@ vector_t vector_t::normalize() const
   }
 }
 
-vector_t vector_t::opposite() const
+Vector Vector::opposite() const
 {
-  return (vector_t){-x, -y, -z};
+  return (Vector){-x, -y, -z};
 }
 
-vector_t vector_t::scale(float scalar) const
+Vector Vector::scale(float scalar) const
 {
-  return (vector_t){scalar * x, scalar * y, scalar * z};
+  return (Vector){scalar * x, scalar * y, scalar * z};
 }
 
-void vector_t::print(int digits) const
+void Vector::print(int digits) const
 {
 #ifdef ARDUINO
   Serial.print(x, digits);
@@ -73,7 +73,7 @@ void vector_t::print(int digits) const
 #endif
 }
 
-void vector_t::print() const
+void Vector::print() const
 {
   print(2);
 }

@@ -4,7 +4,7 @@
 #include "common.h"
 
 TEST(QuaternionTest, QuaternionMakeFromVector) {
-	vector_t v{1.1, 2.1, 3.5};
+	Vector v{1.1, 2.1, 3.5};
 
 	quaternion_t actual = q_make(v);
 
@@ -15,7 +15,7 @@ TEST(QuaternionTest, QuaternionMakeFromVector) {
 }
 
 TEST(QuaternionTest, QuaternionMakeFromAngleAndVector) {
-	vector_t v{1.1, 2.1, 3.5};
+	Vector v{1.1, 2.1, 3.5};
 
 	quaternion_t expected {0.8660254038, 0.55, 1.05, 1.75};
 	quaternion_t actual = q_make(30 * M_PI / 180, v);
@@ -75,7 +75,7 @@ TEST(QuaternionTest, QuaternionNormalize) {
 TEST(QuaternionTest, QuaternionVector) {
 	quaternion_t q{0.5, 1.1, 2.1, 3.5};
 
-	vector_t actual = q_vector(q);
+	Vector actual = q_vector(q);
 
 	EXPECT_NEAR(q.x, actual.x, 0.01);
 	EXPECT_NEAR(q.y, actual.y, 0.01);

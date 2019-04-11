@@ -38,8 +38,8 @@ void loop()
     // For the first second use mag and accel.
     if ((lastPrint + PRINT_SPEED) < now)
     {
-        vector_t const accel = getAccel();
-        vector_t const mag = getMag();
+        Vector const accel = getAccel();
+        Vector const mag = getMag();
 
       init_attitude_with_accel_mag(accel, mag);
       printUpdate();
@@ -75,14 +75,14 @@ void printUpdate()
 void calc_attitude_with_accel_mag()
 {
   // Read the accelerometer and 
-  vector_t accel = getAccel();
-  vector_t mag = getMag();
+  Vector const accel = getAccel();
+  Vector const mag = getMag();
 
   attitude_t attitude = get_attitude_from_accel_mag(accel, mag);
-  vector_t const &euler = attitude.euler;
-  vector_t const &ihat = attitude.ihat;
-  vector_t const &jhat = attitude.jhat;
-  vector_t const &khat = attitude.khat;
+  Vector const &euler = attitude.euler;
+  Vector const &ihat = attitude.ihat;
+  Vector const &jhat = attitude.jhat;
+  Vector const &khat = attitude.khat;
 
   Serial.print(" e:");
   euler.print();
@@ -91,9 +91,9 @@ void calc_attitude_with_accel_mag()
   float const pitchRad = asin(khat.y);
   float const rollRad = atan2(khat.x, khat.z);
 
-  float heading = normalizeDeg(rad2deg(headingRad));
-  float pitch = normalizeDeg(rad2deg(pitchRad));
-  float roll = normalizeDeg(rad2deg(rollRad));
+  float const heading = normalizeDeg(rad2deg(headingRad));
+  float const pitch = normalizeDeg(rad2deg(pitchRad));
+  float const roll = normalizeDeg(rad2deg(rollRad));
 
   print_attitude(heading, pitch, roll);
 
@@ -114,7 +114,7 @@ void calc_attitude_with_accel_mag()
   Serial.print(" v_out:");
   q_vector(q_out).print();
 
-  vector_t v_gyro = getGyro();
+  Vector v_gyro = getGyro();
   Serial.print(" gyro:");
   v_gyro.print();
 

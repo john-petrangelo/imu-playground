@@ -1,15 +1,15 @@
-static vector_t gyroRaw = vector_t();
+static Vector gyroRaw = Vector();
 
 void readGyro()
 {
-  gyroRaw = vector_t(
+  gyroRaw = Vector(
     imu.calcGyro(imu.gx),
     imu.calcGyro(imu.gy),
     imu.calcGyro(imu.gz)
   );
 }
 
-vector_t getGyro()
+Vector getGyro()
 {
   return gyroRaw;
 }
