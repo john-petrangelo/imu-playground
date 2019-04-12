@@ -3,7 +3,7 @@
 //static float roll = 0.0;
 static long lastUpdateTime = 0;
 
-static quaternion_t q_current_euler;
+static Quaternion q_current_euler;
 
 // Calculate pitch, roll, and heading.
 // Pitch/roll calculations take from this app note:
@@ -14,7 +14,7 @@ static quaternion_t q_current_euler;
 void init_attitude_with_accel_mag(Vector const &accel, Vector const &mag)
 {
   attitude_t attitude = get_attitude_from_accel_mag(accel, mag);
-  q_current_euler = quaternion_t(attitude.euler);
+  q_current_euler = Quaternion(attitude.euler);
   lastUpdateTime = millis();
 }
 
@@ -70,15 +70,15 @@ void update_attitude_with_gyro()
   float delta_heading = deg2rad(gyro.z * dt);
 
   // Create quaternion representing rotation on all three axes.
-  quaternion_t q_roll(delta_roll / 2, Vector{0.0, 1.0, 0.0});
-  quaternion_t q_pitch(delta_pitch / 2, Vector{1.0, 0.0, 0.0});
-  quaternion_t q_heading(delta_heading / 2, Vector{0.0, 0.0, 1.0});
+  Quaternion q_roll(delta_roll / 2, Vector{0.0, 1.0, 0.0});
+  Quaternion q_pitch(delta_pitch / 2, Vector{1.0, 0.0, 0.0});
+  Quaternion q_heading(delta_heading / 2, Vector{0.0, 0.0, 1.0});
 
   // Combine the individual rotations into a single quaternion.
-  quaternion_t q_rot = q_roll.multiply(q_pitch).multiply(q_heading);
+  Quaternion q_rot = q_roll.multiply(q_pitch).multiply(q_heading);
 
   // q_euler is the euler vector expressed as a quaternion.
-  quaternion_t q_euler(q_current_euler.vector());
+  Quaternion q_euler(q_current_euler.vector());
 
   // rotation = q x euler x q*
   q_current_euler = q_rot.multiply(q_euler).multiply(q_rot.conjugate()).normalize();

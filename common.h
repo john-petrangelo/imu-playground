@@ -21,22 +21,22 @@ struct Vector {
   void print() const;
 };
 
-struct quaternion_t {
+struct Quaternion {
   float w;
   float x;
   float y;
   float z;
 
-  quaternion_t();
-  quaternion_t(float w, float x, float y, float z);
-  quaternion_t(Vector const &v);
-  quaternion_t(float angle, Vector const &v);
+  Quaternion();
+  Quaternion(float w, float x, float y, float z);
+  Quaternion(Vector const &v);
+  Quaternion(float angle, Vector const &v);
 
-  quaternion_t conjugate() const;
-  quaternion_t multiply(quaternion_t const &other) const;
+  Quaternion conjugate() const;
+  Quaternion multiply(Quaternion const &other) const;
 
   float magnitude() const;
-  quaternion_t normalize() const;
+  Quaternion normalize() const;
 
   Vector vector() const;
 

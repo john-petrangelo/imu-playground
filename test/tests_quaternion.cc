@@ -4,9 +4,9 @@
 #include "common.h"
 
 TEST(QuaternionTest, QuaternionMakeFromVector) {
-	Vector v{1.1, 2.1, 3.5};
+	Vector v(1.1, 2.1, 3.5);
 
-	quaternion_t actual(v);
+	Quaternion actual(v);
 
 	EXPECT_NEAR(0.0, actual.w, 0.01);
 	EXPECT_NEAR(v.x, actual.x, 0.01);
@@ -17,8 +17,8 @@ TEST(QuaternionTest, QuaternionMakeFromVector) {
 TEST(QuaternionTest, QuaternionMakeFromAngleAndVector) {
 	Vector v{1.1, 2.1, 3.5};
 
-	quaternion_t expected {0.8660254038, 0.55, 1.05, 1.75};
-	quaternion_t actual(30 * M_PI / 180, v);
+	Quaternion expected(0.8660254038, 0.55, 1.05, 1.75);
+	Quaternion actual(30 * M_PI / 180, v);
 
 	EXPECT_NEAR(expected.w, actual.w, 0.01);
 	EXPECT_NEAR(expected.x, actual.x, 0.01);
@@ -27,10 +27,10 @@ TEST(QuaternionTest, QuaternionMakeFromAngleAndVector) {
 }
 
 TEST(QuaternionTest, QuaternionConjuagte) {
-	quaternion_t q{0.5, 1.1, 2.1, 3.5};
+	Quaternion q(0.5, 1.1, 2.1, 3.5);
 
-	quaternion_t expected {0.5, -1.1, -2.1, -3.5};
-	quaternion_t actual = q.conjugate();
+	Quaternion expected(0.5, -1.1, -2.1, -3.5);
+	Quaternion actual = q.conjugate();
 
 	EXPECT_NEAR(expected.w, actual.w, 0.01);
 	EXPECT_NEAR(expected.x, actual.x, 0.01);
@@ -39,11 +39,11 @@ TEST(QuaternionTest, QuaternionConjuagte) {
 }
 
 TEST(QuaternionTest, QuaternionMultiply) {
-	quaternion_t q1{0.5, 1.1, 2.1, 3.5};
-	quaternion_t q2{0.6, 1.2, 2.2, 3.6};
+	Quaternion q1(0.5, 1.1, 2.1, 3.5);
+	Quaternion q2(0.6, 1.2, 2.2, 3.6);
 
-	quaternion_t expected {-18.24, 1.12, 2.60, 3.80};
-	quaternion_t actual = q1.multiply(q2);
+	Quaternion expected(-18.24, 1.12, 2.60, 3.80);
+	Quaternion actual = q1.multiply(q2);
 
 	EXPECT_NEAR(expected.w, actual.w, 0.01);
 	EXPECT_NEAR(expected.x, actual.x, 0.01);
@@ -52,7 +52,7 @@ TEST(QuaternionTest, QuaternionMultiply) {
 }
 
 TEST(QuaternionTest, QuaternionMagnitude) {
-	quaternion_t q{0.5, 1.1, 2.1, 3.5};
+	Quaternion q{0.5, 1.1, 2.1, 3.5};
 
 	float expected = 4.26;
 	float actual = q.magnitude();
@@ -61,10 +61,10 @@ TEST(QuaternionTest, QuaternionMagnitude) {
 }
 
 TEST(QuaternionTest, QuaternionNormalize) {
-	quaternion_t q{0.5, 1.1, 2.1, 3.5};
+	Quaternion q(0.5, 1.1, 2.1, 3.5);
 
-	quaternion_t expected {0.12, 0.26, 0.49, 0.82};
-	quaternion_t actual = q.normalize();
+	Quaternion expected (0.12, 0.26, 0.49, 0.82);
+	Quaternion actual = q.normalize();
 
 	EXPECT_NEAR(expected.w, actual.w, 0.01);
 	EXPECT_NEAR(expected.x, actual.x, 0.01);
@@ -73,7 +73,7 @@ TEST(QuaternionTest, QuaternionNormalize) {
 }
 
 TEST(QuaternionTest, QuaternionVector) {
-	quaternion_t q{0.5, 1.1, 2.1, 3.5};
+	Quaternion q(0.5, 1.1, 2.1, 3.5);
 
 	Vector actual = q.vector();
 
