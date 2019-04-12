@@ -3,71 +3,82 @@
 #include "common.h"
 #endif
 
-quaternion_t q_make(Vector const &v)
-{
-  return (quaternion_t){0, v.x, v.y, v.z};
-}
+quaternion_t::quaternion_t() : w(0), x(0), y(0), z(0) {}
 
-quaternion_t q_make(float angle, Vector const &v)
+quaternion_t::quaternion_t(float w, float x, float y, float z) : w(w), x(x), y(y), z(z) {}
+
+quaternion_t::quaternion_t(Vector const &v) :
+  w(0), x(v.x), y(v.y), z(v.z) {}
+
+quaternion_t::quaternion_t(float angle, Vector const &v)
 {
   Vector scaledV = v.scale(sin(angle));
-  return (quaternion_t){cos(angle), scaledV.x, scaledV.y, scaledV.z};
+  w = cos(angle);
+  x = scaledV.x;
+  y = scaledV.y;
+  z = scaledV.z;
 }
 
-quaternion_t q_conjugate(quaternion_t const &q)
+/*
+ * Calculate the conjugate of this quaternion.
+ */
+quaternion_t quaternion_t::conjugate() const
 {
-  return (quaternion_t){q.w, -q.x, -q.y, -q.z};
+  return quaternion_t(w, -x, -y, -z);
 }
 
-quaternion_t q_multiply(quaternion_t const &q1, quaternion_t const &q2)
+/*
+ * Calculate the product of this quaternion and another (this x other).
+ */
+quaternion_t quaternion_t::multiply(quaternion_t const &other) const
 {
-  return (quaternion_t) {
-    q2.w*q1.w - q2.x*q1.x - q2.y*q1.y - q2.z*q1.z,
-    q2.w*q1.x + q2.x*q1.w - q2.y*q1.z + q2.z*q1.y,
-    q2.w*q1.y + q2.x*q1.z + q2.y*q1.w - q2.z*q1.x,
-    q2.w*q1.z - q2.x*q1.y + q2.y*q1.x + q2.z*q1.w
-  };
+  return quaternion_t(
+    (w * other.w) - (x * other.x) - (y * other.y) - (z * other.z),
+    (x * other.w) + (w * other.x) - (z * other.y) + (y * other.z),
+    (y * other.w) + (z * other.x) + (w * other.y) - (x * other.z),
+    (z * other.w) - (y * other.x) + (x * other.y) + (w * other.z)
+  );
 }
 
-float q_magnitude(quaternion_t const &q)
+float quaternion_t::magnitude() const
 {
-  return sqrt((q.w * q.w) + (q.x * q.x) + (q.y * q.y) + (q.z * q.z));
+  return sqrt((w * w) + (x * x) + (y * y) + (z * z));
 }
 
-quaternion_t q_normalize(quaternion_t const &q)
+quaternion_t quaternion_t::normalize() const
 {
-  float magnitude = q_magnitude(q);
-  quaternion_t q_out = q;
+  float const m = magnitude();
+  quaternion_t q_out = *this;
 
-  if (magnitude != 0.0) {
-    q_out.w /= magnitude;
-    q_out.x /= magnitude;
-    q_out.y /= magnitude;
-    q_out.z /= magnitude;
+  if (m != 0.0) {
+    q_out.w /= m;
+    q_out.x /= m;
+    q_out.y /= m;
+    q_out.z /= m;
   }
 
   return q_out;
 }
 
-Vector q_vector(quaternion_t const &q)
+Vector quaternion_t::vector() const
 {
-  return Vector{q.x, q.y, q.z};
+  return Vector(x, y, z);
 }
 
-void q_print(quaternion_t const &q, int digits)
+void quaternion_t::print(int digits) const
 {
 #ifdef ARDUINO
-  Serial.print(q.w, digits);
+  Serial.print(w, digits);
   Serial.print(",");
-  Serial.print(q.x, digits);
+  Serial.print(x, digits);
   Serial.print(",");
-  Serial.print(q.y, digits);
+  Serial.print(y, digits);
   Serial.print(",");
-  Serial.print(q.z, digits);
+  Serial.print(z, digits);
 #endif
 }
 
-void q_print(quaternion_t const &q)
+void quaternion_t::print() const
 {
-  q_print(q, 2);
+  print(2);
 }

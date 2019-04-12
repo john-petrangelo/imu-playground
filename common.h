@@ -9,6 +9,7 @@ struct Vector {
 
   Vector();
   Vector(float x, float y, float z);
+  
   Vector crossproduct(Vector const &other) const;
   float dotproduct(Vector const &other) const;
   float magnitude() const;
@@ -25,6 +26,22 @@ struct quaternion_t {
   float x;
   float y;
   float z;
+
+  quaternion_t();
+  quaternion_t(float w, float x, float y, float z);
+  quaternion_t(Vector const &v);
+  quaternion_t(float angle, Vector const &v);
+
+  quaternion_t conjugate() const;
+  quaternion_t multiply(quaternion_t const &other) const;
+
+  float magnitude() const;
+  quaternion_t normalize() const;
+
+  Vector vector() const;
+
+  void print(int digits) const;
+  void print() const;
 };
 
 struct attitude_t {
@@ -36,20 +53,5 @@ struct attitude_t {
   float pitch;
   float roll;
 };
-
-// Quaternion functions
-quaternion_t q_make(Vector const &v);
-quaternion_t q_make(float angle, Vector const &v);
-
-quaternion_t q_conjugate(quaternion_t const &q);
-quaternion_t q_multiply(quaternion_t const &q1, quaternion_t const &q2);
-
-float q_magnitude(quaternion_t const &q);
-quaternion_t q_normalize(quaternion_t const &q);
-
-Vector q_vector(quaternion_t const &q);
-
-void q_print(quaternion_t const &q, int digits);
-void q_print(quaternion_t const &q);
 
 #endif /* __COMMON_H__ */
