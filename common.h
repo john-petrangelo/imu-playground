@@ -54,4 +54,12 @@ struct attitude_t {
   float roll;
 };
 
+// Prototypes for utils functions.
+float fmap(float x, float in_min, float in_max, float out_min, float out_max);
+float rad2deg(float rad);
+float deg2rad(float deg);
+float normalizeDeg(float in);
+inline float sqr(float x) { return x * x; }
+
+
 #endif /* __COMMON_H__ */

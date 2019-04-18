@@ -1,4 +1,4 @@
-OBJ_FILES = quaternion.o vector.o
+OBJ_FILES = quaternion.o utils.o vector.o
 TEST_SRC_FILES = $(wildcard *.cc)
 TEST_OBJ_FILES = $(TEST_SRC_FILES:.cc=.o)
 TEST_DEP_FILES = $(TEST_SRC_FILES:.cc=.d)
