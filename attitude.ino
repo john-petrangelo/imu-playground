@@ -1,3 +1,8 @@
+#ifndef ARDUINO
+#include <math.h>
+#include "common.h"
+#endif
+
 //static float heading = 0.0;
 //static float pitch = 0.0;
 //static float roll = 0.0;
@@ -13,14 +18,28 @@ static Quaternion q_current_euler;
 
 void init_attitude_with_accel_mag(Vector const &accel, Vector const &mag)
 {
-  attitude_t attitude = get_attitude_from_accel_mag(accel, mag);
+#ifdef ARDUINO
+  Attitude attitude = get_attitude_from_accel_mag(accel, mag);
   q_current_euler = Quaternion(attitude.euler);
   lastUpdateTime = millis();
+#endif
 }
 
-attitude_t get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
+float getSimpleHeading(Vector const &mag) {
+  return atan2(mag.x, mag.y);
+}
+
+float getSimplePitch(Vector const &accel) {
+  return atan2(accel.y, accel.z);
+}
+
+float getSimpleRoll(Vector const &accel) {
+  return atan2(accel.x, accel.z);
+}
+
+Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
 {
-  attitude_t attitude;
+  Attitude attitude;
   
   // NOTE
   // For now we assume that the accelerometer is measuring g (i.e. we're not moving).
@@ -35,10 +54,10 @@ attitude_t get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
   // jhat represents the direction of "north" expressed relative to the sensor.
   attitude.jhat = attitude.khat.crossproduct(attitude.ihat).normalize();
 
-//  Serial.print(" [ijk]hat: ");
-//  v_print(ihat);
-//  v_print(jhat);
-//  v_print(khat);
+  //  Serial.print(" [ijk]hat: ");
+  //  v_print(ihat);
+  //  v_print(jhat);
+  //  v_print(khat);
 
   // The euler vector is the orientation of the sensor expressed in global coordinates.
   // The euler vector is made up of the projection (i.e. dot product)
@@ -59,7 +78,13 @@ attitude_t get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
 
 void update_attitude_with_gyro()
 {
+#ifdef ARDUINO
   long now = millis();
+#else
+  long now = 0;
+#endif
+  
+#if 0
   Vector const gyro = getGyro();
 
   // Calculate delta time in seconds.
@@ -82,6 +107,7 @@ void update_attitude_with_gyro()
 
   // rotation = q x euler x q*
   q_current_euler = q_rot.multiply(q_euler).multiply(q_rot.conjugate()).normalize();
+#endif // 0
 
   lastUpdateTime = now;
 }

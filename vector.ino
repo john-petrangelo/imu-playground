@@ -1,18 +1,30 @@
 #ifndef ARDUINO
 #include <math.h>
+
 #include "common.h"
 #endif
 
 Vector::Vector() {
-  Vector();
+  ;
 }
 
 Vector::Vector(float x, float y, float z) : x(x), y(y), z(z) {}
 
+bool Vector::operator==(Vector const &other) const
+{
+  float const TOLERANCE = 0.01;
+  
+  return
+    fabs(x - other.x) < TOLERANCE &&
+    fabs(y - other.y) < TOLERANCE &&
+    fabs(z - other.z) < TOLERANCE;
+}
+
 /*
  * Calculate the cross product of this vector and another vector (this x other).
  */
-Vector Vector::crossproduct(Vector const &other) const {
+Vector Vector::crossproduct(Vector const &other) const
+{
   Vector prod = (Vector){
     (y * other.z) - (z * other.y),
     (z * other.x) - (x * other.z),
@@ -77,3 +89,10 @@ void Vector::print() const
 {
   print(2);
 }
+
+#ifndef ARDUINO
+std::ostream& operator<<(std::ostream& os, Vector const &v)
+{
+  return os << "(" << v.x << ", "  << v.y << ", " << v.z << ")";  
+}
+#endif

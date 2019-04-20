@@ -78,7 +78,7 @@ void calc_attitude_with_accel_mag()
   Vector const accel = getAccel();
   Vector const mag = getMag();
 
-  attitude_t attitude = get_attitude_from_accel_mag(accel, mag);
+  Attitude attitude = get_attitude_from_accel_mag(accel, mag);
   Vector const &euler = attitude.euler;
   Vector const &ihat = attitude.ihat;
   Vector const &jhat = attitude.jhat;

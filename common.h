@@ -1,6 +1,10 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
+#ifndef ARDUINO
+#include <ostream>
+#endif
+
 // Custom types
 struct Vector {
   float x;
@@ -9,6 +13,8 @@ struct Vector {
 
   Vector();
   Vector(float x, float y, float z);
+
+  bool operator==(Vector const &other) const;
   
   Vector crossproduct(Vector const &other) const;
   float dotproduct(Vector const &other) const;
@@ -32,6 +38,8 @@ struct Quaternion {
   Quaternion(Vector const &v);
   Quaternion(float angle, Vector const &v);
 
+  bool operator==(Quaternion const &other) const;
+
   Quaternion conjugate() const;
   Quaternion multiply(Quaternion const &other) const;
 
@@ -44,7 +52,13 @@ struct Quaternion {
   void print() const;
 };
 
-struct attitude_t {
+// These are useful for debugging unit tests.
+#ifndef ARDUINO
+  std::ostream& operator<<(std::ostream& os, Vector const &v);
+  std::ostream& operator<<(std::ostream& os, Quaternion const &q);
+#endif
+
+struct Attitude {
   Vector euler;
   Vector ihat;
   Vector jhat;
@@ -61,5 +75,10 @@ float deg2rad(float deg);
 float normalizeDeg(float in);
 inline float sqr(float x) { return x * x; }
 
+// Prototypes for attitude functions.
+float getSimpleHeading(Vector const &mag);
+float getSimplePitch(Vector const &accel);
+float getSimpleRoll(Vector const &accel);
+Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag);
 
 #endif /* __COMMON_H__ */

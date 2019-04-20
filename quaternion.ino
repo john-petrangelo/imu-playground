@@ -1,5 +1,6 @@
 #ifndef ARDUINO
 #include <math.h>
+
 #include "common.h"
 #endif
 
@@ -17,6 +18,16 @@ Quaternion::Quaternion(float angle, Vector const &v)
   x = scaledV.x;
   y = scaledV.y;
   z = scaledV.z;
+}
+
+bool Quaternion::operator==(Quaternion const &other) const {
+  float const TOLERANCE = 0.01;
+  
+  return
+    fabs(w - other.w) < TOLERANCE &&
+    fabs(x - other.x) < TOLERANCE &&
+    fabs(y - other.y) < TOLERANCE &&
+    fabs(z - other.z) < TOLERANCE;
 }
 
 /*
@@ -82,3 +93,10 @@ void Quaternion::print() const
 {
   print(2);
 }
+
+#ifndef ARDUINO
+std::ostream& operator<<(std::ostream& os, Quaternion const &q)
+{
+  return os << "(" << q.w << ", " << q.x << "i, "  << q.y << "j, " << q.z << "k)";  
+}
+#endif
