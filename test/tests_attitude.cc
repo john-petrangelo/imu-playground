@@ -3,7 +3,7 @@
 #include "common.h"
 
 struct AttitudeTestData {
-	std::string name;
+  std::string name;
   Vector inAccel;
   Vector inMag;
   Attitude out;
@@ -15,64 +15,118 @@ std::ostream& operator<<(std::ostream& os, AttitudeTestData const &data)
 }
 
 AttitudeTestData const flat_data[] = {
+  {
+    "Flat, 0˚ (N)",
+    Vector(0, 0, -1), Vector(0, 1, -0.5), // accel, magnetometer
     {
-    	"Flat, 0˚ (N)",
-      Vector(0, 0, -1), Vector(0, 1, -0.5), // accel, magnetometer
-      {
-        Vector(0, 1, 0), // Euler
-        Vector(1, 0, 0), Vector(0, 1, 0), Vector(0, 0, 1), // ihat, jhat, khat
-        0, 0, 0, // heading, pitch, roll
-      }
-    },
+      Vector(0, 1, 0), // Euler
+      Vector(1, 0, 0), Vector(0, 1, 0), Vector(0, 0, 1), // ihat, jhat, khat
+      0, 0, 0, // heading, pitch, roll
+    }
+  },
+  {
+    "Flat, 30˚ (NNE)",
+    Vector(0, 0, -1), Vector(-0.5, 0.87, -0.5),
     {
-    	"Flat, 30˚ (NNE)",
-      Vector(0, 0, -1), Vector(-0.50, 0.87, -0.5),
-      {
-        Vector(0.50, 0.87, 0),
-        Vector(0.87, 0.50, 0), Vector(-0.50, 0.87, 0), Vector(0, 0, 1),
-        0, 0, 0,
-      }
-    },
+      Vector(0.5, 0.87, 0),
+      Vector(0.87, 0.5, 0), Vector(-0.5, 0.87, 0), Vector(0, 0, 1),
+      0, 0, 0,
+    }
+  },
+  {
+    "Flat, 60˚ (ENE)",
+    Vector(0, 0, -1), Vector(-0.87, 0.5, -0.5),
     {
-    	"Flat, 60˚ (ENE)",
-      Vector(0, 0, -1), Vector(-0.87, 0.50, -0.5),
-      {
-        Vector(0.87, 0.50, 0),
-        Vector(0.50, 0.87, 0), Vector(-0.87, 0.50, 0), Vector(0, 0, 1),
-        0, 0, 0,
-      }
-    },
+      Vector(0.87, 0.5, 0),
+      Vector(0.5, 0.87, 0), Vector(-0.87, 0.5, 0), Vector(0, 0, 1),
+      0, 0, 0,
+    }
+  },
+  {
+    "Flat, 90˚ (E)",
+    Vector(0, 0, -1), Vector(-1, 0, -0.5),
     {
-    	"Flat, 90˚ (E)",
-    	Vector(0, 0, -1), Vector(-1, 0, -0.5),
-    	{
-    		Vector(1, 0, 0),
-    		Vector(0, 1, 0), Vector(-1, 0, 0), Vector(0, 0, 1),
-    		0, 0, 0,
-    	}
-    },
+      Vector(1, 0, 0),
+      Vector(0, 1, 0), Vector(-1, 0, 0), Vector(0, 0, 1),
+      0, 0, 0,
+    }
+  },
+  {
+    "Flat, 120˚ (ESE)",
+    Vector(0, 0, -1), Vector(-0.87, -0.5, -0.5),
     {
-    	"Flat, 120˚ (ESE)",
-    	Vector(0, 0, -1), Vector(-0.87, -0.5, -0.5),
-    	{
-    		Vector(0.87, -0.5, 0),
-    		Vector(-0.50, 0.87, 0), Vector(-0.87, -0.5, 0), Vector(0, 0, 1),
-    		0, 0, 0,
-    	}
-    },
-  };
-// 150d  0 0 -1  -0.50 -0.87 -0.5    -0.87  0.50 0   -0.50 -0.87 0  0 0 1
-// 180d  0 0 -1   0.00 -1.00 -0.5    -1.00  0.00 0    0.00 -1.00 0  0 0 1
-// 210d  0 0 -1   0.50 -0.87 -0.5    -0.87 -0.50 0    0.50 -0.87 0  0 0 1
-// 240d  0 0 -1   0.87 -0.50 -0.5    -0.50 -0.87 0    0.87 -0.50 0  0 0 1
-// 270d  0 0 -1   1.00 0.00 -0.5      0.00 -1.00 0    1.00 0.00 0   0 0 1
-// 300d  0 0 -1   0.87 0.50 -0.5      0.50 -0.87 0    0.87 0.50 0   0 0 1
-// 330d  0 0 -1   0.50 0.87 -0.5      0.87 -0.50 0    0.50 0.87 0   0 0 1
+      Vector(0.87, -0.5, 0),
+      Vector(-0.5, 0.87, 0), Vector(-0.87, -0.5, 0), Vector(0, 0, 1),
+      0, 0, 0,
+    }
+  },
+  {
+    "Flat, 150˚ (SSE)",
+    Vector(0, 0, -1), Vector(-0.50, -0.87, -0.5),
+    {
+      Vector(0.5, -0.87, 0),
+      Vector(-0.87, 0.5, 0), Vector(-0.5, -0.87, 0), Vector(0, 0, 1),
+      0, 0, 0,
+    }
+  },
+  {
+    "Flat, 180 (S)",
+    Vector(0, 0, -1), Vector(0, -1, -0.5),
+    {
+      Vector(0, -1, 0),
+      Vector(-1, 0, 0), Vector(0, -1, 0), Vector(0, 0, 1),
+      0, 0, 0,
+    }
+  },
+  {
+    "Flat, 210 (SSW)",
+    Vector(0, 0, -1), Vector(0.5, -0.87, -0.5),
+    {
+      Vector(-0.5, -0.87, 0),
+      Vector(-0.87, -0.5, 0), Vector(0.5, -0.87, 0), Vector(0, 0, 1),
+      0, 0, 0,
+    }
+  },
+  {
+    "Flat, 240 (WSW)",
+    Vector(0, 0, -1), Vector(0.87, -0.5, -0.5),
+    {
+      Vector(-0.87, -0.5, 0),
+      Vector(-0.5, -0.87, 0), Vector(0.87, -0.5, 0), Vector(0, 0, 1),
+      0, 0, 0,
+    }
+  },
+  {
+    "Flat, 270 (W)",
+    Vector(0, 0, -1), Vector(1, 0, -0.5),
+    {
+      Vector(-1, 0, 0),
+      Vector(0, -1, 0), Vector(1, 0, 0), Vector(0, 0, 1),
+      0, 0, 0,
+    }
+  },
+  {
+    "Flat, 300 (WNW)",
+    Vector(0, 0, -1), Vector(0.87, 0.5, -0.5),
+    {
+      Vector(-0.87, 0.5, 0),
+      Vector(0.5, -0.87, 0), Vector(0.87, 0.5, 0), Vector(0, 0, 1),
+      0, 0, 0,
+    }
+  },
+  {
+    "Flat, 330 (NNW)",
+    Vector(0, 0, -1), Vector(0.5, 0.87, -0.5),
+    {
+      Vector(-0.5, 0.87, 0),
+      Vector(0.87, -0.5, 0), Vector(0.5, 0.87, 0), Vector(0, 0, 1),
+      0, 0, 0,
+    }
+  },
+};
 
 class AttitudeTest : public :: testing::TestWithParam<AttitudeTestData> { };
-
-INSTANTIATE_TEST_SUITE_P(PitchZeroTests, AttitudeTest,
-	::testing::ValuesIn(flat_data));
+INSTANTIATE_TEST_SUITE_P(PitchZeroTests, AttitudeTest, ::testing::ValuesIn(flat_data));
 
 TEST_P(AttitudeTest, getAttitudeFromAM)
 {
