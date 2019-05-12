@@ -304,7 +304,7 @@ AttitudeTestData const generate_test_data(float yaw, float pitch, float roll) {
 TEST(AttitudeTest, testABC)
 {
 	float const yaw   = 30 * M_PI / 180;
-	float const pitch = 60 * M_PI / 180;
+	float const pitch = 0 * M_PI / 180;
 	float const roll  =  0 * M_PI / 180;
 
 	AttitudeTestData data = generate_test_data(yaw, pitch, roll);

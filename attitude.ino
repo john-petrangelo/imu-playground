@@ -28,7 +28,7 @@ void init_attitude_with_accel_mag(Vector const &accel, Vector const &mag)
 }
 
 float getSimpleHeading(Vector const &mag) {
-  return atan2(mag.x, mag.y);
+  return -atan2(mag.x, mag.y);
 }
 
 float getSimplePitch(Vector const &accel) {
