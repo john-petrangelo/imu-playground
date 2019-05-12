@@ -1,4 +1,6 @@
 #ifndef ARDUINO
+#include <iostream>
+#include <iomanip>
 #include <math.h>
 #include "common.h"
 #endif
@@ -44,20 +46,26 @@ Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
   // NOTE
   // For now we assume that the accelerometer is measuring g (i.e. we're not moving).
   // Later we'll need to address not using accelerometer for g when we're moving.
+
+  // std::cout << "accel: ";
+  // accel.print();
+  // std::cout << "mag: ";
+  // mag.print();
   
   // khat represents the direction of "up" expressed relative to the sensor.
   attitude.khat = accel.opposite().normalize();
+  // std::cout << "khat: ";
+  // attitude.khat.print();
 
   // ihat represents the direction of "east" expressed relative to the sensor.
   attitude.ihat = mag.crossproduct(attitude.khat).normalize();
+  // std::cout << "ihat: ";
+  // attitude.ihat.print();
 
   // jhat represents the direction of "north" expressed relative to the sensor.
   attitude.jhat = attitude.khat.crossproduct(attitude.ihat).normalize();
-
-  //  Serial.print(" [ijk]hat: ");
-  //  v_print(ihat);
-  //  v_print(jhat);
-  //  v_print(khat);
+  // std::cout << "jhat: ";
+  // attitude.jhat.print();
 
   // The euler vector is the orientation of the sensor expressed in global coordinates.
   // The euler vector is made up of the projection (i.e. dot product)
@@ -72,6 +80,10 @@ Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
     attitude.jhat.y,
     attitude.khat.y
   ).normalize();
+
+  attitude.heading = getSimpleHeading(mag);
+  attitude.pitch = getSimplePitch(attitude.khat);
+  attitude.roll = getSimpleRoll(attitude.khat);
 
   return attitude;
 }

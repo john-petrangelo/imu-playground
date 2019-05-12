@@ -1,5 +1,7 @@
 #ifndef ARDUINO
-#include <math.h>
+#include <iostream>
+#include <iomanip>
+#include <cmath>
 
 #include "common.h"
 #endif
@@ -82,6 +84,8 @@ void Vector::print(int digits) const
   Serial.print(y, digits);
   Serial.print(",");
   Serial.print(z, digits);
+#else
+  std::cout << std::fixed << std::setprecision(2) << "(" << x << ", " << y << ", " << z << ")" << std::endl;
 #endif
 }
 
