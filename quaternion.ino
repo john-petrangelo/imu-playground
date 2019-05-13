@@ -21,7 +21,7 @@ Quaternion::Quaternion(float angle, Vector const &v)
 }
 
 bool Quaternion::operator==(Quaternion const &other) const {
-  float const TOLERANCE = 0.01;
+  float const TOLERANCE = 0.000001;
   
   return
     fabs(w - other.w) < TOLERANCE &&

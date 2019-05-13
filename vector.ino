@@ -14,7 +14,7 @@ Vector::Vector(float x, float y, float z) : x(x), y(y), z(z) {}
 
 bool Vector::operator==(Vector const &other) const
 {
-  float const TOLERANCE = 0.01;
+  float const TOLERANCE = 0.000001;
   
   return
     fabs(x - other.x) < TOLERANCE &&
@@ -85,7 +85,8 @@ void Vector::print(int digits) const
   Serial.print(",");
   Serial.print(z, digits);
 #else
-  std::cout << std::fixed << std::setprecision(2) << "(" << x << ", " << y << ", " << z << ")" << std::endl;
+  std::cout << std::fixed << std::setprecision(digits)
+    << "(" << x << ", " << y << ", " << z << ")" << std::endl;
 #endif
 }
 
