@@ -61,9 +61,6 @@ Vector const localToGlobal(float yaw, float pitch, float roll, Vector const &v) 
 
 // Angles are expressed in radians.
 AttitudeTestData const generate_test_data(float yaw, float pitch, float roll) {
-  // The unit vector representing the direction the stick is pointing.
-  Vector stick = localToGlobal(yaw, pitch, roll, Vector(0, 1, 0));
-  
   // The unit vector representing gravity (down).
   Vector accel = globalToLocal(yaw, pitch, roll, Vector(0, 0, -1));
 
@@ -74,16 +71,18 @@ AttitudeTestData const generate_test_data(float yaw, float pitch, float roll) {
 
   // std::cout << "stick=" << stick << std::endl;
   // std::cout << "accel=" << accel << std::endl;
-  std::cout << "mag=" << mag << std::endl;
+  // std::cout << "mag=" << mag << std::endl;
 
 	AttitudeTestData data = {
     "Noname",
     accel, mag, // accel, magnetometer
     {
-      Vector(1, 0, 0), // Euler
+      localToGlobal(yaw, pitch, roll, Vector(0, 1, 0)), // Euler
       globalToLocal(yaw, pitch, roll, Vector(1, 0, 0)), // ihat
       globalToLocal(yaw, pitch, roll, Vector(0, 1, 0)), // jhat
       globalToLocal(yaw, pitch, roll, Vector(0, 0, 1)), // khat
+      Quaternion(yaw, pitch, roll),
+      // Quaternion(yaw, -roll, -pitch),
       yaw, pitch, roll,
     }
   };
@@ -98,16 +97,16 @@ using ::testing::Values;
 class AttitudeTestCombos : public :: testing::TestWithParam<std::tuple<int, int, int>> { };
 INSTANTIATE_TEST_SUITE_P(AllCombos, AttitudeTestCombos, Combine(
 	// Yaw
-	// Values(0),
-	Range(-180, 181, 10),
+	Values(0),
+	// Range(-180, 181, 30),
 
   // Pitch
 	// Values(0),
-	Range(-90, 91, 10),
+	Range(-90, 91, 30),
 
   // Roll
-	// Values(0)
-	Range(-180, 181, 10)
+	Values(0)
+	// Range(-180, 181, 30)
 ));
 
 TEST_P(AttitudeTestCombos, testCombos)
@@ -125,13 +124,15 @@ TEST_P(AttitudeTestCombos, testCombos)
   Vector const &inAccel =  data.inAccel;
   Vector const &inMag =  data.inMag;
 
-  // Vector const &exp_euler(data.out.euler);
+  Vector const &exp_euler(data.out.euler);
+  Quaternion const &exp_q(data.out.q);
   Vector const &exp_ihat(data.out.ihat);
   Vector const &exp_jhat(data.out.jhat);
   Vector const &exp_khat(data.out.khat);
 
   Attitude const actual = get_attitude_from_accel_mag(inAccel, inMag);
-  // EXPECT_EQ(exp_euler, actual.euler);
+  EXPECT_EQ(exp_euler, actual.euler);
+  EXPECT_EQ(exp_q, actual.q);
   EXPECT_EQ(exp_ihat, actual.ihat);
   EXPECT_EQ(exp_jhat, actual.jhat);
   EXPECT_EQ(exp_khat, actual.khat);

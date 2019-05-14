@@ -1,4 +1,5 @@
 #ifndef ARDUINO
+#include <iostream>
 #include <math.h>
 
 #include "common.h"
@@ -18,6 +19,79 @@ Quaternion::Quaternion(float angle, Vector const &v)
   x = scaledV.x;
   y = scaledV.y;
   z = scaledV.z;
+}
+
+Quaternion::Quaternion(Vector const &ihat, Vector const &jhat, Vector const &khat)
+{
+	// w = sqrt(1.0 + ihat.x + jhat.y + khat.z) / 2.0;
+	// float const w4 = (4.0 * w);
+	// x = (jhat.z - khat.y) / w4 ;
+	// y = (khat.x - ihat.z) / w4 ;
+	// z = (ihat.y - jhat.x) / w4 ;
+
+  float const tr = ihat.x + jhat.y + khat.z;
+
+  if (tr > 0) { 
+    std::cout << "Case0";
+    float const S = sqrt(tr+1.0) * 2; // S=4*qw 
+    w = 0.25 * S;
+    x = (jhat.z - khat.y) / S;
+    y = (khat.x - ihat.z) / S; 
+    z = (ihat.y - jhat.x) / S; 
+  } else if ((ihat.x > jhat.y)&(ihat.x > khat.z)) { 
+    std::cout << "Case1";
+    float const S = sqrt(1.0 + ihat.x - jhat.y - khat.z) * 2; // S=4*qx 
+    w = (jhat.z - khat.y) / S;
+    x = 0.25 * S;
+    y = (jhat.x + ihat.y) / S; 
+    z = (khat.x + ihat.z) / S; 
+  } else if (jhat.y > khat.z) { 
+    std::cout << "Case2";
+    float const S = sqrt(1.0 + jhat.y - ihat.x - khat.z) * 2; // S=4*qy
+    w = (khat.x - ihat.z) / S;
+    x = (jhat.x + ihat.y) / S; 
+    y = 0.25 * S;
+    z = (khat.y + jhat.z) / S; 
+  } else { 
+    std::cout << "Case3";
+    float const S = sqrt(1.0 + khat.z - ihat.x - jhat.y) * 2; // S=4*qz
+    w = (ihat.y - jhat.x) / S;
+    x = (khat.x + ihat.z) / S;
+    y = (khat.y + jhat.z) / S;
+    z = 0.25 * S;
+  }
+  std::cout << ": tr=" << tr << " " <<
+    ihat << " " << jhat << " " << khat<< std::endl;
+}
+
+// Quaternion::Quaternion(float yaw, float pitch, float roll)
+// {
+//     float cy = cos(yaw * 0.5);
+//     float sy = sin(yaw * 0.5);
+//     float cp = cos(pitch * 0.5);
+//     float sp = sin(pitch * 0.5);
+//     float cr = cos(roll * 0.5);
+//     float sr = sin(roll * 0.5);
+
+//     w = cy * cp * cr + sy * sp * sr;
+//     x = cy * cp * sr - sy * sp * cr;
+//     y = sy * cp * sr + cy * sp * cr;
+//     z = sy * cp * cr - cy * sp * sr;
+// }
+
+Quaternion::Quaternion(float yaw, float pitch, float roll)
+{
+    float cy = cos(-yaw * 0.5);
+    float sy = sin(-yaw * 0.5);
+    float cp = cos(pitch * 0.5);
+    float sp = sin(pitch * 0.5);
+    float cr = cos(roll * 0.5);
+    float sr = sin(roll * 0.5);
+
+    w = cy * cp * cr + sy * sp * sr;
+    y = cy * cp * sr - sy * sp * cr;
+    x = sy * cp * sr + cy * sp * cr;
+    z = -(sy * cp * cr - cy * sp * sr);
 }
 
 bool Quaternion::operator==(Quaternion const &other) const {

@@ -35,6 +35,8 @@ struct Quaternion {
 
   Quaternion();
   Quaternion(float w, float x, float y, float z);
+  Quaternion(Vector const &ihat, Vector const &jhat, Vector const &khat);
+  Quaternion(float yaw, float pitch, float roll);
   Quaternion(Vector const &v);
   Quaternion(float angle, Vector const &v);
 
@@ -63,6 +65,7 @@ struct Attitude {
   Vector ihat;
   Vector jhat;
   Vector khat;
+  Quaternion q;
   float heading;
   float pitch;
   float roll;
