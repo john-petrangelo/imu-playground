@@ -41,8 +41,11 @@ struct Quaternion {
   Quaternion(float angle, Vector const &v);
 
   bool operator==(Quaternion const &other) const;
+  bool equivalent(Quaternion const &other) const;
 
+  Quaternion negative() const;
   Quaternion conjugate() const;
+
   Quaternion multiply(Quaternion const &other) const;
 
   float magnitude() const;
@@ -62,10 +65,16 @@ struct Quaternion {
 
 struct Attitude {
   Vector euler;
+
   Vector ihat;
   Vector jhat;
   Vector khat;
+
   Quaternion q;
+
+  Vector aaVector; // axis-angle vector
+  float aaAngle; // axis-angle angle
+
   float heading;
   float pitch;
   float roll;

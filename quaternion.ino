@@ -12,9 +12,10 @@ Quaternion::Quaternion(float w, float x, float y, float z) : w(w), x(x), y(y), z
 Quaternion::Quaternion(Vector const &v) :
   w(0), x(v.x), y(v.y), z(v.z) {}
 
+// Create a quaternion based on axis-angle values.
 Quaternion::Quaternion(float angle, Vector const &v)
 {
-  Vector scaledV = v.scale(sin(angle));
+  Vector scaledV = v.normalize().scale(sin(angle));
   w = cos(angle);
   x = scaledV.x;
   y = scaledV.y;
@@ -60,6 +61,7 @@ Quaternion::Quaternion(Vector const &ihat, Vector const &jhat, Vector const &kha
     y = (khat.y + jhat.z) / S;
     z = 0.25 * S;
   }
+
   std::cout << ": tr=" << tr << " " <<
     ihat << " " << jhat << " " << khat<< std::endl;
 }
@@ -102,6 +104,23 @@ bool Quaternion::operator==(Quaternion const &other) const {
     fabs(x - other.x) < TOLERANCE &&
     fabs(y - other.y) < TOLERANCE &&
     fabs(z - other.z) < TOLERANCE;
+}
+
+bool Quaternion::equivalent(Quaternion const &other) const {
+  float const TOLERANCE = 0.000001;
+  if (w * other.w < 0 && fabs(w) > TOLERANCE) {
+    return negative() == other;
+  } else {
+    return *this == other;
+  }
+}
+
+/*
+ * Calculate the conjugate of this quaternion.
+ */
+Quaternion Quaternion::negative() const
+{
+  return Quaternion(-w, -x, -y, -z);
 }
 
 /*
@@ -171,6 +190,6 @@ void Quaternion::print() const
 #ifndef ARDUINO
 std::ostream& operator<<(std::ostream& os, Quaternion const &q)
 {
-  return os << "(" << q.w << ", " << q.x << "i, "  << q.y << "j, " << q.z << "k)";  
+  return os << "(" << q.x << "i, "  << q.y << "j, " << q.z << "k, " << q.w << ")";  
 }
 #endif

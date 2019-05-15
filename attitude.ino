@@ -83,6 +83,10 @@ Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
 
   attitude.q = Quaternion(attitude.ihat, attitude.jhat, attitude.khat);
 
+  // Axis-angle
+  attitude.aaVector = Vector();
+  attitude.aaAngle = 0.0;
+
   attitude.heading = getSimpleHeading(mag);
   attitude.pitch = getSimplePitch(attitude.khat);
   attitude.roll = getSimpleRoll(attitude.khat);

@@ -11,10 +11,9 @@ TEST(QuaternionTest, QuaternionMakeFromVector) {
 	EXPECT_EQ(Quaternion(0.0, v.x, v.y, v.z), actual);
 }
 
-TEST(QuaternionTest, QuaternionMakeFromAngleAndVector) {
-	Vector v{1.1, 2.1, 3.5};
-
-	Quaternion expected(0.8660254038, 0.55, 1.05, 1.75);
+TEST(QuaternionTest, QuaternionMakeFromAxisAngle) {
+	Vector v(1.1, 2.1, 3.5);
+	Quaternion expected(0.866025, 0.130107, 0.248386, 0.413977);
 	Quaternion actual(30 * M_PI / 180, v);
 
 	EXPECT_EQ(expected, actual);
