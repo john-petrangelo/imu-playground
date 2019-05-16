@@ -53,17 +53,17 @@ Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
   // mag.print();
   
   // khat represents the direction of "up" expressed relative to the sensor.
-  attitude.khat = accel.opposite().normalize();
+  attitude.khat = accel.normalize();
   // std::cout << "khat: ";
   // attitude.khat.print();
 
   // ihat represents the direction of "east" expressed relative to the sensor.
-  attitude.ihat = mag.crossproduct(attitude.khat).normalize();
+  attitude.jhat = attitude.khat.crossproduct(mag).normalize();
   // std::cout << "ihat: ";
   // attitude.ihat.print();
 
   // jhat represents the direction of "north" expressed relative to the sensor.
-  attitude.jhat = attitude.khat.crossproduct(attitude.ihat).normalize();
+  attitude.ihat = attitude.jhat.crossproduct(attitude.khat).normalize();
   // std::cout << "jhat: ";
   // attitude.jhat.print();
 
@@ -76,9 +76,9 @@ Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
   //   float euler_z = v_dotproduct(localVector, khat);
 
   attitude.euler = Vector(
-    attitude.ihat.y,
-    attitude.jhat.y,
-    attitude.khat.y
+    attitude.ihat.x,
+    attitude.jhat.x,
+    attitude.khat.x
   ).normalize();
 
   attitude.q = Quaternion(attitude.ihat, attitude.jhat, attitude.khat);
