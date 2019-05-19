@@ -12,6 +12,8 @@ Quaternion::Quaternion(float w, float x, float y, float z) : w(w), x(x), y(y), z
 Quaternion::Quaternion(Vector const &v) :
   w(0), x(v.x), y(v.y), z(v.z) {}
 
+float const Quaternion::GIMBAL_LOCK_TOL = 0.1 * M_PI/180.0;
+
 // Create a quaternion based on axis-angle values.
 Quaternion::Quaternion(float angle, Vector const &v)
 {
@@ -62,10 +64,10 @@ Quaternion::Quaternion(float yaw, float pitch, float roll)
     float cr = cos(roll * 0.5);
     float sr = sin(roll * 0.5);
 
-    w = cy * cp * cr + sy * sp * sr;
-    x = cy * cp * sr - sy * sp * cr;
-    y = sy * cp * sr + cy * sp * cr;
-    z = sy * cp * cr - cy * sp * sr;
+    w = cy * cp * cr   +   sy * sp * sr;
+    x = cy * cp * sr   -   sy * sp * cr;
+    y = sy * cp * sr   +   cy * sp * cr;
+    z = sy * cp * cr   -   cy * sp * sr;
 }
 
 bool Quaternion::operator==(Quaternion const &other) const {
@@ -134,6 +136,59 @@ Quaternion Quaternion::normalize() const
 Vector Quaternion::vector() const
 {
   return Vector(x, y, z);
+}
+
+float Quaternion::yaw() const
+{
+  // TODO We can make this decision without invoking asin.
+  float const p = pitch();
+
+  if (fabs(p + M_PI/2) < GIMBAL_LOCK_TOL) {
+    // Gimbal lock, down.
+    return 2 * atan2(x,w);
+  }
+  
+  if (fabs(p - M_PI/2) < GIMBAL_LOCK_TOL) {
+    // Gimbal lock, up.
+    return -2 * atan2(x,w);
+  }
+
+  float const siny_cosp = 2.0 * (w*z + x*y);
+	float const cosy_cosp = 1.0 - 2.0 * (y*y + z*z);
+
+  return atan2(siny_cosp, cosy_cosp);
+}
+
+float Quaternion::pitch() const
+{
+  float const sinp = 2 * (w*y - z*x);
+  if (fabs(sinp) >= 1) {
+    // Use 90 degrees if out of range.
+    return copysign(M_PI / 2, sinp);
+  }
+
+  return asin(sinp);
+}
+
+float Quaternion::roll() const
+{
+  // TODO We can make this decision without invoking asin.
+  float const p = pitch();
+
+  if (fabs(p + M_PI/2) < GIMBAL_LOCK_TOL) {
+    // Gimbal lock, down.
+    return 0;
+  }
+  
+  if (fabs(p - M_PI/2) < GIMBAL_LOCK_TOL) {
+    // Gimbal lock, up.
+    return 0;
+  }
+
+  float const sinr_cosp = 2.0 * (w*x + y*z);
+  float const cosr_cosp = 1.0 - 2.0 * (x*x + y*y);
+
+  return atan2(sinr_cosp, cosr_cosp);
 }
 
 void Quaternion::print(int digits) const

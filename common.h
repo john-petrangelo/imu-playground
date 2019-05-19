@@ -33,6 +33,9 @@ struct Quaternion {
   float y;
   float z;
 
+  // Gimbal-lock tolerance in radians
+  static float const GIMBAL_LOCK_TOL;
+
   Quaternion();
   Quaternion(float w, float x, float y, float z);
   Quaternion(Vector const &ihat, Vector const &jhat, Vector const &khat);
@@ -52,6 +55,10 @@ struct Quaternion {
   Quaternion normalize() const;
 
   Vector vector() const;
+
+  float yaw() const;
+  float pitch() const;
+  float roll() const;
 
   void print(int digits) const;
   void print() const;
@@ -88,9 +95,6 @@ float normalizeDeg(float in);
 inline float sqr(float x) { return x * x; }
 
 // Prototypes for attitude functions.
-float getSimpleHeading(Vector const &mag);
-float getSimplePitch(Vector const &accel);
-float getSimpleRoll(Vector const &accel);
 Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag);
 
 #endif /* __COMMON_H__ */

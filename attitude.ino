@@ -27,18 +27,6 @@ void init_attitude_with_accel_mag(Vector const &accel, Vector const &mag)
 #endif
 }
 
-float getSimpleHeading(Vector const &mag) {
-  return -atan2(mag.x, mag.y);
-}
-
-float getSimplePitch(Vector const &accel) {
-  return atan2(accel.y, accel.z);
-}
-
-float getSimpleRoll(Vector const &accel) {
-  return atan2(accel.x, accel.z);
-}
-
 Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
 {
   Attitude attitude;
@@ -87,9 +75,9 @@ Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
   attitude.aaVector = Vector();
   attitude.aaAngle = 0.0;
 
-  attitude.heading = getSimpleHeading(mag);
-  attitude.pitch = getSimplePitch(attitude.khat);
-  attitude.roll = getSimpleRoll(attitude.khat);
+  attitude.heading = attitude.q.yaw();
+  attitude.pitch = attitude.q.pitch();
+  attitude.roll = attitude.q.roll();
 
   return attitude;
 }

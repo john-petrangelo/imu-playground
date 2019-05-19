@@ -59,17 +59,11 @@ Vector const localToGlobal(float yaw, float pitch, float roll, Vector const &v)
 AttitudeTestData const generate_test_data(float yaw, float pitch, float roll) {
   // The unit vector representing gravity (down).
   Vector accel = globalToLocal(yaw, pitch, roll, Vector(0, 0, 1));
-  // cout << "accel=" << accel << endl;
 
   // The unit vector representing magnetic north.
   float const inclination = -60;
   Vector mag = globalToLocal(yaw, pitch, roll,
   	Vector(cos(inclination*M_PI/180), 0, -sin(inclination*M_PI/180)));
-  // cout << "mag=" << mag << endl;
-
-  // Vector aaVector = Vector(cos(pitch) * sin(yaw), cos(pitch) * cos(yaw), sin(pitch));
-  // std::cout << "Yo! aaVector is " << aaVector << std::endl;
-  // float aaAngle = roll;
 
 	AttitudeTestData data = {
     "Noname",
@@ -101,14 +95,15 @@ using ::testing::Values;
 class AttitudeTestCombos : public :: testing::TestWithParam<std::tuple<int, int, int>> { };
 INSTANTIATE_TEST_SUITE_P(AllCombos, AttitudeTestCombos, Combine(
 	// Yaw
-	// Values(-180),
+	// Values(-100),
 	Range(-180, 181, 30),
+
   // Pitch
-	// Values(0),
+	// Values(-80),
 	Range(-90, 91, 30),
 
   // Roll
-	// Values(45)
+	// Values(-180)
 	Range(-180, 181, 30)
 ));
 
@@ -145,15 +140,50 @@ TEST_P(AttitudeTestCombos, testCombos)
   EXPECT_EQ(exp_jhat, actual.jhat);
   EXPECT_EQ(exp_khat, actual.khat);
 
-  // // EXPECT_EQ(exp_q, actual.q);
-  // std::cout << "Q_expected=" << exp_q << std::endl;
-  // std::cout << "Q_actual  =" << actual.q << std::endl;
   EXPECT_TRUE(exp_q.equivalent(actual.q));
 
-  // EXPECT_EQ(exp_aaVector, actual.aaVector);
-  // EXPECT_EQ(exp_aaAngle, actual.aaAngle);
+  float actualHeading   = 180/M_PI * actual.heading;
+  float actualPitch     = 180/M_PI * actual.pitch;
+  float actualRoll      = 180/M_PI * actual.roll;
+  float expectedHeading = 180/M_PI * data.out.heading;
+  float expectedPitch   = 180/M_PI * data.out.pitch;
+  float expectedRoll    = 180/M_PI * data.out.roll;
 
-  // EXPECT_NEAR(data.out.heading, actual.heading, 0.2);
-  // EXPECT_NEAR(data.out.pitch, actual.pitch, 0.2);
-  // EXPECT_NEAR(data.out.roll, actual.roll, 0.2);
+  // TODO Refactor the code below.
+  if (fabs(expectedPitch + 90) < 0.2) {
+  	// Gimble lock, straight down
+    EXPECT_NEAR(actualRoll, 0, 0.2);
+    float headingErr = fabs(actualHeading - (expectedHeading + expectedRoll));
+    if (headingErr < 1) {
+  		EXPECT_NEAR(headingErr, 0, 0.2);
+  	} else {
+  		EXPECT_NEAR(headingErr, 360, 0.2);
+  	}
+  } else if (fabs(expectedPitch - 90) < 0.2) {
+  	// Gimble lock, straight up
+    EXPECT_NEAR(actualRoll, 0, 0.2);
+    float headingErr = fabs(actualHeading - (expectedHeading - expectedRoll));
+    if (headingErr < 1) {
+  		EXPECT_NEAR(headingErr, 0, 0.2);
+  	} else {
+  		EXPECT_NEAR(headingErr, 360, 0.2);
+  	}
+  } else {
+  	// No gimble lock
+    float headingErr = fabs(expectedHeading - actualHeading);
+    if (headingErr < 1) {
+  		EXPECT_NEAR(headingErr, 0, 0.2);
+  	} else {
+  		EXPECT_NEAR(headingErr, 360, 0.2);
+  	}
+
+    float rollErr = fabs(expectedRoll - actualRoll);
+    if (rollErr < 1) {
+  		EXPECT_NEAR(rollErr, 0, 0.2);
+  	} else {
+  		EXPECT_NEAR(rollErr, 360, 0.2);
+  	}
+ }
+
+	 EXPECT_NEAR(data.out.pitch, actual.pitch, 0.2);
 }
