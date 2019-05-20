@@ -87,9 +87,6 @@ struct Attitude {
 
   Quaternion q;
 
-  Vector aaVector; // axis-angle vector
-  float aaAngle; // axis-angle angle
-
   float heading;
   float pitch;
   float roll;

@@ -77,10 +77,6 @@ AttitudeTestData const generate_test_data(float yaw, float pitch, float roll) {
 
       Quaternion(yaw, pitch, roll),
 
-      // Axis-angle
-      Vector(cos(pitch) * sin(yaw), cos(pitch) * cos(yaw), sin(pitch)),
-      roll,
-
       yaw, pitch, roll,
     }
   };
@@ -125,9 +121,6 @@ TEST_P(AttitudeTestCombos, testCombos)
   Vector const &exp_euler(data.out.euler);
 
   Quaternion const &exp_q(data.out.q);
-
-  Vector const &exp_aaVector(data.out.aaVector);
-  float const &exp_aaAngle(data.out.aaAngle);
 
   Vector const &exp_ihat(data.out.ihat);
   Vector const &exp_jhat(data.out.jhat);

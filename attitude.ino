@@ -67,10 +67,6 @@ Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
   attitude.q = Quaternion(attitude.ihat, attitude.jhat, attitude.khat);
   q_current_euler = attitude.q;
 
-  // Axis-angle
-  attitude.aaVector = Vector();
-  attitude.aaAngle = 0.0;
-
   attitude.heading = attitude.q.yaw();
   attitude.pitch = attitude.q.pitch();
   attitude.roll = attitude.q.roll();
