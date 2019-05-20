@@ -15,13 +15,16 @@ static Attitude attitude;
 
 Attitude init_attitude_with_accel_mag(Vector const &accel, Vector const &mag)
 {
-#ifdef ARDUINO
   Attitude attitude = get_attitude_from_accel_mag(accel, mag);
   q_current_euler = Quaternion(attitude.euler);
+
+#ifdef ARDUINO
   lastUpdateTime = millis();
+#else
+  lastUpdateTime = 0;
+#endif
 
   return attitude;
-#endif
 }
 
 Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
@@ -74,7 +77,7 @@ Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
   return attitude;
 }
 
-Attitude update_attitude_with_gyro()
+Attitude update_attitude_with_gyro(Vector const &gyro)
 {
 #ifdef ARDUINO
   long now = millis();
@@ -82,33 +85,18 @@ Attitude update_attitude_with_gyro()
   long now = 0;
 #endif
 
-  Vector const v_gyro = Gyro::get();
-
   // Calculate delta time in seconds.
-  float dt = (now - lastUpdateTime) * 0.001;
+  float const dt = (now - lastUpdateTime) * 0.001;
 
-//  Serial.print("dt=");
-//  Serial.print(dt, 3);
-//  Serial.print(" gyro=");
-//  v_gyro.print();
+  Quaternion const q_gyro = Quaternion(dt * deg2rad(gyro.magnitude())/2, gyro.normalize());
 
-  Quaternion q_gyro = Quaternion(dt * deg2rad(v_gyro.magnitude())/2, v_gyro.normalize());
-//  Serial.print("q=");
-//  q_gyro.print(3);
-
-//  Serial.print("before=");
-//  attitude.q.print(3);
   attitude.q = attitude.q.multiply(q_gyro);
-//  Serial.print("after=");
-//  attitude.q.print(3);
 
   attitude.heading = attitude.q.yaw();
   attitude.pitch = attitude.q.pitch();
   attitude.roll = attitude.q.roll();
 
   lastUpdateTime = now;
-
-//  Serial.println();
 
   return attitude;
 }

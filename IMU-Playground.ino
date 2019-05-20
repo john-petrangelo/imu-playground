@@ -84,8 +84,10 @@ void loop()
     }
   } else {
      // After one second use the gyro.
+     Vector const gyro = Gyro::get();
+
      if ((lastUpdate + UPDATE_SPEED) < now) {
-       attitude = update_attitude_with_gyro();
+       attitude = update_attitude_with_gyro(gyro);
        lastUpdate = now;
      }
 
