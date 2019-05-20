@@ -3,9 +3,9 @@ static Vector gyroRaw = Vector();
 void readGyro()
 {
   gyroRaw = Vector(
-    imu.calcGyro(imu.gx),
     imu.calcGyro(imu.gy),
-    imu.calcGyro(imu.gz)
+    imu.calcGyro(imu.gz),
+    -imu.calcGyro(imu.gz)
   );
 }
 

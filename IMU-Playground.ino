@@ -13,7 +13,7 @@ LSM9DS1 imu;
 ////////////////////////////
 // Sketch Output Settings //
 ////////////////////////////
-unsigned long const PRINT_SPEED = 250; // ms between prints
+unsigned long const PRINT_SPEED = 50; // ms between prints
 unsigned long const  UPDATE_SPEED = 5; // ms between updates
 static unsigned long lastPrint = 0;
 static unsigned long lastUpdate = 0;
@@ -29,12 +29,42 @@ void setup()
   initSensors();
 }
 
+void loop_cal()
+{
+  readSensors();
+  Vector const accel = getAccelTicks();
+  Vector const mag = getMagTicks();
+  
+  // Print the sensor data
+  Serial.print("Raw:");
+  Serial.print((int)accel.x);
+  Serial.print(',');
+  Serial.print((int)accel.y);
+  Serial.print(',');
+  Serial.print((int)accel.z);
+  Serial.print(',');
+  Serial.print(0 /*gyro.raw.x*/);
+  Serial.print(',');
+  Serial.print(0 /*gyro.raw.y*/);
+  Serial.print(',');
+  Serial.print(0 /*gyro.raw.z*/);
+  Serial.print(',');
+  Serial.print((int)mag.x);
+  Serial.print(',');
+  Serial.print((int)mag.y);
+  Serial.print(',');
+  Serial.print((int)mag.z);
+  Serial.println();
+
+  delay(50);
+}
+
 void loop()
 {
   unsigned long const now = millis();
   readSensors();
 
-  if (now < 1000) {
+  if (now < 1000000) {
     // For the first second use mag and accel.
     if ((lastPrint + PRINT_SPEED) < now)
     {

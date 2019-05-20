@@ -78,7 +78,11 @@ Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
   attitude.heading = attitude.q.yaw();
   attitude.pitch = attitude.q.pitch();
   attitude.roll = attitude.q.roll();
-
+  Serial.print(rad2deg(attitude.heading));
+  Serial.print(",");
+  Serial.print(rad2deg(attitude.pitch));
+  Serial.print(",");
+  Serial.print(rad2deg(attitude.roll));
   return attitude;
 }
 

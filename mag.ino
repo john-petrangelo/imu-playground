@@ -27,9 +27,9 @@ static Vector magMaxSeen = Vector(-999.0, -999.0, -999.0);
 void readMag()
 {
   magRaw = (Vector){
-    imu.calcMag(imu.mx),
     imu.calcMag(imu.my),
-    imu.calcMag(imu.mz)
+    imu.calcMag(imu.mx),
+    -imu.calcMag(imu.mz)
   };
     
   magAdj = (Vector){
@@ -49,6 +49,11 @@ void readMag()
     max(magMaxSeen.y, magRaw.y),
     max(magMaxSeen.z, magRaw.z)
   );
+}
+
+Vector getMagTicks()
+{
+  return Vector(imu.my, imu.mx, -imu.mz);
 }
 
 Vector getMag()
