@@ -17,14 +17,3 @@ Vector Gyro::get()
 {
   return gyroRaw;
 }
-
-void Gyro::print()
-{
-  Serial.print("G: ");
-  Serial.print(gyroRaw.x, 2);
-  Serial.print(", ");
-  Serial.print(gyroRaw.y, 2);
-  Serial.print(", ");
-  Serial.print(gyroRaw.z, 2);
-  Serial.print(" deg/s");
-}

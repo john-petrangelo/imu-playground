@@ -61,20 +61,6 @@ Vector getMag()
   return magAdj;
 }
 
-float getMagHeading()
-{
-  float heading;
-  if (magAdj.y == 0.0) {
-    heading = (magAdj.x < 0.0) ? 180.0 : 0.0;
-  } else {
-    heading = rad2deg(atan2(-magAdj.x, magAdj.y));
-  }
-
-  heading = normalizeDeg(heading - DECLINATION);
-
-  return heading;
-}
-
 void plotMagRaw()
 {  
   Serial.print(magRaw.x, 2);
