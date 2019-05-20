@@ -52,6 +52,6 @@ void readSensors()
   }
 
   readAccel();
-  readGyro();
+  Gyro::read();
   readMag();
 }

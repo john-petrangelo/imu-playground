@@ -13,7 +13,7 @@ LSM9DS1 imu;
 ////////////////////////////
 // Sketch Output Settings //
 ////////////////////////////
-unsigned long const PRINT_SPEED = 50; // ms between prints
+unsigned long const PRINT_SPEED = 25; // ms between prints
 unsigned long const  UPDATE_SPEED = 5; // ms between updates
 static unsigned long lastPrint = 0;
 static unsigned long lastUpdate = 0;
@@ -63,33 +63,43 @@ void loop()
 {
   unsigned long const now = millis();
   readSensors();
+  Attitude attitude;
 
-  if (now < 1000000) {
+  if (now < 1000) {
     // For the first second use mag and accel.
-    if ((lastPrint + PRINT_SPEED) < now)
-    {
-        Vector const accel = getAccel();
-        Vector const mag = getMag();
+    if ((lastPrint + PRINT_SPEED) < now) {
+      Vector const accel = getAccel();
+      Vector const mag = getMag();
+      attitude = init_attitude_with_accel_mag(accel, mag);
 
-      init_attitude_with_accel_mag(accel, mag);
-      printUpdate();
       lastPrint = now;
       resetCounts();
+
+      Serial.print(rad2deg(attitude.heading));
+      Serial.print(",");
+      Serial.print(rad2deg(attitude.pitch));
+      Serial.print(",");
+      Serial.print(rad2deg(attitude.roll));
+      Serial.print("\n");
     }
   } else {
      // After one second use the gyro.
-     if ((lastUpdate + UPDATE_SPEED) < now)
-     {
-       update_attitude_with_gyro();
+     if ((lastUpdate + UPDATE_SPEED) < now) {
+       attitude = update_attitude_with_gyro();
        lastUpdate = now;
      }
 
-    if ((lastPrint + PRINT_SPEED) < now)
-    {
+    if ((lastPrint + PRINT_SPEED) < now) {
        lastPrint = now;
 //       printUpdate();
-//       resetCounts();
-      calc_attitude_with_accel_mag();
+       resetCounts();
+
+      Serial.print(rad2deg(attitude.heading));
+      Serial.print(",");
+      Serial.print(rad2deg(attitude.pitch));
+      Serial.print(",");
+      Serial.print(rad2deg(attitude.roll));
+      Serial.print("\n");
     }
   }
 }
@@ -97,9 +107,9 @@ void loop()
 void printUpdate()
 {
 //    update_gyro_attitude();
-    plot_gyro_attitude();
-
-    Serial.println();  
+//    plot_gyro_attitude();
+//
+//    Serial.println();  
 }
 
 void calc_attitude_with_accel_mag()
@@ -144,7 +154,7 @@ void calc_attitude_with_accel_mag()
   Serial.print(" v_out:");
   q_out.vector().print();
 
-  Vector v_gyro = getGyro();
+  Vector v_gyro = Gyro::get();
   Serial.print(" gyro:");
   v_gyro.print();
 

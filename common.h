@@ -70,6 +70,14 @@ struct Quaternion {
   std::ostream& operator<<(std::ostream& os, Quaternion const &q);
 #endif
 
+struct Gyro {
+  static Vector gyroRaw;
+
+  static void read();
+  static Vector get();
+  static void print();
+};
+
 struct Attitude {
   Vector euler;
 
@@ -96,5 +104,6 @@ inline float sqr(float x) { return x * x; }
 
 // Prototypes for attitude functions.
 Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag);
+Attitude update_attitude_with_gyro();
 
 #endif /* __COMMON_H__ */

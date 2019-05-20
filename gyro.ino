@@ -1,20 +1,24 @@
-static Vector gyroRaw = Vector();
+#ifndef ARDUINO
+#include "common.h"
+#endif
 
-void readGyro()
+Vector Gyro::gyroRaw = Vector();
+
+void Gyro::read()
 {
   gyroRaw = Vector(
     imu.calcGyro(imu.gy),
-    imu.calcGyro(imu.gz),
+    -imu.calcGyro(imu.gx),
     -imu.calcGyro(imu.gz)
   );
 }
 
-Vector getGyro()
+Vector Gyro::get()
 {
   return gyroRaw;
 }
 
-void printGyro()
+void Gyro::print()
 {
   Serial.print("G: ");
   Serial.print(gyroRaw.x, 2);

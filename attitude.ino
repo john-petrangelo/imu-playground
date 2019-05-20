@@ -11,26 +11,21 @@
 static long lastUpdateTime = 0;
 
 static Quaternion q_current_euler;
+static Attitude attitude;
 
-// Calculate pitch, roll, and heading.
-// Pitch/roll calculations take from this app note:
-// http://cache.freescale.com/files/sensors/doc/app_note/AN3461.pdf?fpsp=1
-// Heading calculations taken from this app note:
-// http://www51.honeywell.com/aero/common/documents/myaerospacecatalog-documents/Defense_Brochures-documents/Magnetic__Literature_Application_notes-documents/AN203_Compass_Heading_Using_Magnetometers.pdf
-
-void init_attitude_with_accel_mag(Vector const &accel, Vector const &mag)
+Attitude init_attitude_with_accel_mag(Vector const &accel, Vector const &mag)
 {
 #ifdef ARDUINO
   Attitude attitude = get_attitude_from_accel_mag(accel, mag);
   q_current_euler = Quaternion(attitude.euler);
   lastUpdateTime = millis();
+
+  return attitude;
 #endif
 }
 
 Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
 {
-  Attitude attitude;
-  
   // NOTE
   // For now we assume that the accelerometer is measuring g (i.e. we're not moving).
   // Later we'll need to address not using accelerometer for g when we're moving.
@@ -70,6 +65,7 @@ Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
   ).normalize();
 
   attitude.q = Quaternion(attitude.ihat, attitude.jhat, attitude.khat);
+  q_current_euler = attitude.q;
 
   // Axis-angle
   attitude.aaVector = Vector();
@@ -78,48 +74,47 @@ Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag)
   attitude.heading = attitude.q.yaw();
   attitude.pitch = attitude.q.pitch();
   attitude.roll = attitude.q.roll();
-  Serial.print(rad2deg(attitude.heading));
-  Serial.print(",");
-  Serial.print(rad2deg(attitude.pitch));
-  Serial.print(",");
-  Serial.print(rad2deg(attitude.roll));
+
   return attitude;
 }
 
-void update_attitude_with_gyro()
+Attitude update_attitude_with_gyro()
 {
 #ifdef ARDUINO
   long now = millis();
 #else
   long now = 0;
 #endif
-  
-#if 0
-  Vector const gyro = getGyro();
+
+  Vector const v_gyro = Gyro::get();
 
   // Calculate delta time in seconds.
   float dt = (now - lastUpdateTime) * 0.001;
 
-  float delta_roll = deg2rad(gyro.y * dt);
-  float delta_pitch = deg2rad(gyro.x * dt);
-  float delta_heading = deg2rad(gyro.z * dt);
+//  Serial.print("dt=");
+//  Serial.print(dt, 3);
+//  Serial.print(" gyro=");
+//  v_gyro.print();
 
-  // Create quaternion representing rotation on all three axes.
-  Quaternion q_roll(delta_roll / 2, Vector{0.0, 1.0, 0.0});
-  Quaternion q_pitch(delta_pitch / 2, Vector{1.0, 0.0, 0.0});
-  Quaternion q_heading(delta_heading / 2, Vector{0.0, 0.0, 1.0});
+  Quaternion q_gyro = Quaternion(dt * deg2rad(v_gyro.magnitude())/2, v_gyro.normalize());
+//  Serial.print("q=");
+//  q_gyro.print(3);
 
-  // Combine the individual rotations into a single quaternion.
-  Quaternion q_rot = q_roll.multiply(q_pitch).multiply(q_heading);
+//  Serial.print("before=");
+//  attitude.q.print(3);
+  attitude.q = attitude.q.multiply(q_gyro);
+//  Serial.print("after=");
+//  attitude.q.print(3);
 
-  // q_euler is the euler vector expressed as a quaternion.
-  Quaternion q_euler(q_current_euler.vector());
-
-  // rotation = q x euler x q*
-  q_current_euler = q_rot.multiply(q_euler).multiply(q_rot.conjugate()).normalize();
-#endif // 0
+  attitude.heading = attitude.q.yaw();
+  attitude.pitch = attitude.q.pitch();
+  attitude.roll = attitude.q.roll();
 
   lastUpdateTime = now;
+
+//  Serial.println();
+
+  return attitude;
 }
 
 void plot_gyro_attitude()
