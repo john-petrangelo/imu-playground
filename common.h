@@ -103,4 +103,11 @@ inline float sqr(float x) { return x * x; }
 Attitude get_attitude_from_accel_mag(Vector const &accel, Vector const &mag);
 Attitude update_attitude_with_gyro();
 
+// Useful macro definitions
+#ifdef ARDUINO
+#define NOW_MS millis()
+#else
+#define NOW_MS 0
+#endif
+
 #endif /* __COMMON_H__ */
